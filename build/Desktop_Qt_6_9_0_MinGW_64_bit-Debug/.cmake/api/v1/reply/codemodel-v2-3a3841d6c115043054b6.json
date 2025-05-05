@@ -1,0 +1,79 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-bb58d20156105c5dfbe8.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "legilimens",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "legilimens::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-legilimens-Debug-7256e85d3045c5a7893c.json",
+					"name" : "legilimens",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "legilimens_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-legilimens_autogen-Debug-8a9cd6f83fa49ec92296.json",
+					"name" : "legilimens_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "legilimens_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-legilimens_autogen_timestamp_deps-Debug-e7260813582c3edc63a6.json",
+					"name" : "legilimens_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "E:/Code/QT/legilimens/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug",
+		"source" : "E:/Code/QT/legilimens"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}

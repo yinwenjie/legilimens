@@ -37,5 +37,8 @@ void MainWindow::onOpenFile()
         QFileInfo fileInfo(fileName);
         qint64 size = fileInfo.size();
         qDebug() << "Selected file:" << fileName << ", Size:" << size << "bytes";
+
+        // Update the window title to include the file path
+        setWindowTitle(QString("Legilimens - %1").arg(fileName));
     }
 }

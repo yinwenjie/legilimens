@@ -22,5 +22,6 @@ private:
 
 private slots:
     void onOpenFile();
+    void onCloseFile();
 };
 #endif // MAINWINDOW_H

@@ -17,6 +17,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(openFileAction, &QAction::triggered, this, &MainWindow::onOpenFile);
     fileMenu->addAction(openFileAction);
 
+    // Create a Close action
+    QAction *closeFileAction = new QAction(tr("&Close"), this);
+    connect(closeFileAction, &QAction::triggered, this, &MainWindow::onCloseFile);
+    fileMenu->addAction(closeFileAction);
+
     // Create an Exit action
     QAction *exitAction = new QAction(tr("E&xit"), this);
     connect(exitAction, &QAction::triggered, this, &QWidget::close);
@@ -41,4 +46,9 @@ void MainWindow::onOpenFile()
         // Update the window title to include the file path
         setWindowTitle(QString("Legilimens - %1").arg(fileName));
     }
+}
+
+void MainWindow::onCloseFile()
+{
+    setWindowTitle("Legilimens"); // Reset to default title
 }

@@ -34,9 +34,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Create a View menu
     QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
-    QAction *streamsAction = new QAction(tr("&Streams"), this);
+    streamsAction = new QAction(tr("&Streams"), this);
+    streamsAction->setCheckable(true);
     connect(streamsAction, &QAction::triggered, this, &MainWindow::onStreams);
     viewMenu->addAction(streamsAction);
+    streamsDock = nullptr;
 
     // Create a Help menu
     QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
@@ -76,13 +78,17 @@ void MainWindow::onAboutUs()
 void MainWindow::onStreams()
 {
     // Create a dock widget if it doesn't exist
-    static QDockWidget *streamsDock = nullptr;
     if (!streamsDock) {
         streamsDock = new QDockWidget(tr("Streams"), this);
         streamsDock->setWidget(new QLabel(tr("Streams content goes here"), streamsDock));
         streamsDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, streamsDock);
+
+        connect(streamsDock, &QDockWidget::visibilityChanged, this, [this](bool visible){
+            streamsAction->setChecked(visible);
+        });
     }
-    streamsDock->show();
-    streamsDock->raise();
+    bool willShow = !streamsDock->isVisible();
+    streamsDock->setVisible(willShow);
+    streamsAction->setChecked(willShow);
 }

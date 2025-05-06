@@ -19,6 +19,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    QAction *streamsAction = nullptr;
+    QDockWidget *streamsDock = nullptr;
 
 private slots:
     void onOpenFile();

@@ -23,5 +23,7 @@ private:
 private slots:
     void onOpenFile();
     void onCloseFile();
+    void onAboutUs();
+    void onStreams();
 };
 #endif // MAINWINDOW_H

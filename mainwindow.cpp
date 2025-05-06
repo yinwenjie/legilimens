@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 #include <QFileDialog>
 #include "./ui_mainwindow.h"
+#include <QMessageBox>
+#include <QDockWidget>
+#include <QLabel>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -28,6 +31,18 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Add the Exit action to the File menu
     fileMenu->addAction(exitAction);
+
+    // Create a View menu
+    QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
+    QAction *streamsAction = new QAction(tr("&Streams"), this);
+    connect(streamsAction, &QAction::triggered, this, &MainWindow::onStreams);
+    viewMenu->addAction(streamsAction);
+
+    // Create a Help menu
+    QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
+    QAction *aboutUsAction = new QAction(tr("&About us"), this);
+    connect(aboutUsAction, &QAction::triggered, this, &MainWindow::onAboutUs);
+    helpMenu->addAction(aboutUsAction);
 }
 
 MainWindow::~MainWindow()
@@ -51,4 +66,23 @@ void MainWindow::onOpenFile()
 void MainWindow::onCloseFile()
 {
     setWindowTitle("Legilimens"); // Reset to default title
+}
+
+void MainWindow::onAboutUs()
+{
+    QMessageBox::information(this, tr("About us"), tr("Legilimens"));
+}
+
+void MainWindow::onStreams()
+{
+    // Create a dock widget if it doesn't exist
+    static QDockWidget *streamsDock = nullptr;
+    if (!streamsDock) {
+        streamsDock = new QDockWidget(tr("Streams"), this);
+        streamsDock->setWidget(new QLabel(tr("Streams content goes here"), streamsDock));
+        streamsDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+        addDockWidget(Qt::LeftDockWidgetArea, streamsDock);
+    }
+    streamsDock->show();
+    streamsDock->raise();
 }

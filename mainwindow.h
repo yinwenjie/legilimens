@@ -20,12 +20,26 @@ public:
 private:
     Ui::MainWindow *ui;
     QAction *streamsAction = nullptr;
+    QAction *sliceAction = nullptr;
+    QAction *hexAction = nullptr;
+    QAction *macroblockAction = nullptr;
     QDockWidget *streamsDock = nullptr;
+    QDockWidget *sliceDock = nullptr;
+    QDockWidget *hexDock = nullptr;
+    QDockWidget *macroblockDock = nullptr;
 
 private slots:
     void onOpenFile();
     void onCloseFile();
     void onAboutUs();
     void onStreams();
+    void onSlice();
+    void onHex();
+    void onMacroblock();
+
+    void onPlay();
+    void onPause();
+    void onStop();
+    void onResume();
 };
 #endif // MAINWINDOW_H

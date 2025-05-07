@@ -4,6 +4,8 @@
 #include <QMessageBox>
 #include <QDockWidget>
 #include <QLabel>
+#include <QFrame>
+#include <QVBoxLayout>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -38,7 +40,25 @@ MainWindow::MainWindow(QWidget *parent)
     streamsAction->setCheckable(true);
     connect(streamsAction, &QAction::triggered, this, &MainWindow::onStreams);
     viewMenu->addAction(streamsAction);
-    streamsDock = nullptr;
+
+    // Create and show the streams dock widget by default
+    streamsDock = new QDockWidget(tr("Streams"), this);
+    QFrame* frame = new QFrame(streamsDock);
+    frame->setFrameShape(QFrame::StyledPanel);
+    QLabel* label = new QLabel(tr("Streams content goes here"), frame);
+    QVBoxLayout* layout = new QVBoxLayout(frame);
+    layout->addWidget(label);
+    frame->setLayout(layout);
+    streamsDock->setWidget(frame);
+    streamsDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    streamsDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+    addDockWidget(Qt::LeftDockWidgetArea, streamsDock);
+    streamsDock->setVisible(true);
+    streamsAction->setChecked(true);
+
+    connect(streamsDock, &QDockWidget::visibilityChanged, this, [this](bool visible){
+        streamsAction->setChecked(visible);
+    });
 
     // Create a Help menu
     QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
@@ -80,8 +100,15 @@ void MainWindow::onStreams()
     // Create a dock widget if it doesn't exist
     if (!streamsDock) {
         streamsDock = new QDockWidget(tr("Streams"), this);
-        streamsDock->setWidget(new QLabel(tr("Streams content goes here"), streamsDock));
+        QFrame* frame = new QFrame(streamsDock);
+        frame->setFrameShape(QFrame::StyledPanel);
+        QLabel* label = new QLabel(tr("Streams content goes here"), frame);
+        QVBoxLayout* layout = new QVBoxLayout(frame);
+        layout->addWidget(label);
+        frame->setLayout(layout);
+        streamsDock->setWidget(frame);
         streamsDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+        streamsDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
         addDockWidget(Qt::LeftDockWidgetArea, streamsDock);
 
         connect(streamsDock, &QDockWidget::visibilityChanged, this, [this](bool visible){

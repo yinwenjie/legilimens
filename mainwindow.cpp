@@ -1,6 +1,7 @@
 #include "mainwindow.h"
-#include <QFileDialog>
 #include "./ui_mainwindow.h"
+
+#include <QFileDialog>
 #include <QMessageBox>
 #include <QDockWidget>
 #include <QLabel>
@@ -30,112 +31,35 @@ MainWindow::MainWindow(QWidget *parent)
     // Create an Exit action
     QAction *exitAction = new QAction(tr("E&xit"), this);
     connect(exitAction, &QAction::triggered, this, &QWidget::close);
-
-    // Add the Exit action to the File menu
     fileMenu->addAction(exitAction);
 
     // Create a View menu
     QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
     
-    // Streams view
+    // Create view actions and dock widgets
     streamsAction = new QAction(tr("&Streams"), this);
     streamsAction->setCheckable(true);
     connect(streamsAction, &QAction::triggered, this, &MainWindow::onStreams);
     viewMenu->addAction(streamsAction);
+    streamsDock = createDockWidget(tr("Streams"), streamsAction, Qt::LeftDockWidgetArea);
 
-    // Slice view
     sliceAction = new QAction(tr("&Slice"), this);
     sliceAction->setCheckable(true);
     connect(sliceAction, &QAction::triggered, this, &MainWindow::onSlice);
     viewMenu->addAction(sliceAction);
+    sliceDock = createDockWidget(tr("Slice"), sliceAction, Qt::LeftDockWidgetArea);
 
-    // Hex view
     hexAction = new QAction(tr("&Hex"), this);
     hexAction->setCheckable(true);
     connect(hexAction, &QAction::triggered, this, &MainWindow::onHex);
     viewMenu->addAction(hexAction);
+    hexDock = createDockWidget(tr("Hex"), hexAction, Qt::RightDockWidgetArea);
 
-    // Macroblock view
     macroblockAction = new QAction(tr("&Macroblock"), this);
     macroblockAction->setCheckable(true);
     connect(macroblockAction, &QAction::triggered, this, &MainWindow::onMacroblock);
     viewMenu->addAction(macroblockAction);
-
-    // Create and show the streams dock widget by default
-    streamsDock = new QDockWidget(tr("Streams"), this);
-    QFrame* frame = new QFrame(streamsDock);
-    frame->setFrameShape(QFrame::StyledPanel);
-    QLabel* label = new QLabel(tr("Streams content goes here"), frame);
-    QVBoxLayout* layout = new QVBoxLayout(frame);
-    layout->addWidget(label);
-    frame->setLayout(layout);
-    streamsDock->setWidget(frame);
-    streamsDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    streamsDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    addDockWidget(Qt::LeftDockWidgetArea, streamsDock);
-    streamsDock->setVisible(true);
-    streamsAction->setChecked(true);
-
-    // Create and show the slice dock widget by default
-    sliceDock = new QDockWidget(tr("Slice"), this);
-    QFrame* sliceFrame = new QFrame(sliceDock);
-    sliceFrame->setFrameShape(QFrame::StyledPanel);
-    QLabel* sliceLabel = new QLabel(tr("Slice content goes here"), sliceFrame);
-    QVBoxLayout* sliceLayout = new QVBoxLayout(sliceFrame);
-    sliceLayout->addWidget(sliceLabel);
-    sliceFrame->setLayout(sliceLayout);
-    sliceDock->setWidget(sliceFrame);
-    sliceDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    sliceDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    addDockWidget(Qt::RightDockWidgetArea, sliceDock);
-    sliceDock->setVisible(true);
-    sliceAction->setChecked(true);
-
-    // Create and show the hex dock widget by default
-    hexDock = new QDockWidget(tr("Hex"), this);
-    QFrame* hexFrame = new QFrame(hexDock);
-    hexFrame->setFrameShape(QFrame::StyledPanel);
-    QLabel* hexLabel = new QLabel(tr("Hex content goes here"), hexFrame);
-    QVBoxLayout* hexLayout = new QVBoxLayout(hexFrame);
-    hexLayout->addWidget(hexLabel);
-    hexFrame->setLayout(hexLayout);
-    hexDock->setWidget(hexFrame);
-    hexDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    hexDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    addDockWidget(Qt::RightDockWidgetArea, hexDock);
-    hexDock->setVisible(true);
-    hexAction->setChecked(true);
-
-    // Create and show the macroblock dock widget by default
-    macroblockDock = new QDockWidget(tr("Macroblock"), this);
-    QFrame* macroblockFrame = new QFrame(macroblockDock);
-    macroblockFrame->setFrameShape(QFrame::StyledPanel);
-    QLabel* macroblockLabel = new QLabel(tr("Macroblock content goes here"), macroblockFrame);
-    QVBoxLayout* macroblockLayout = new QVBoxLayout(macroblockFrame);
-    macroblockLayout->addWidget(macroblockLabel);
-    macroblockFrame->setLayout(macroblockLayout);
-    macroblockDock->setWidget(macroblockFrame);
-    macroblockDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    macroblockDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    addDockWidget(Qt::RightDockWidgetArea, macroblockDock);
-    macroblockDock->setVisible(true);
-    macroblockAction->setChecked(true);
-
-    connect(streamsDock, &QDockWidget::visibilityChanged, this, [this](bool visible){
-        streamsAction->setChecked(visible);
-    });
-
-    connect(sliceDock, &QDockWidget::visibilityChanged, this, [this](bool visible){
-        sliceAction->setChecked(visible);
-    });
-
-    connect(hexDock, &QDockWidget::visibilityChanged, this, [this](bool visible){
-        hexAction->setChecked(visible);
-    });
-
-    connect(macroblockDock, &QDockWidget::visibilityChanged, this, [this](bool visible){
-        macroblockAction->setChecked(visible);
-    });
+    macroblockDock = createDockWidget(tr("Macroblock"), macroblockAction, Qt::RightDockWidgetArea);
 
     // Create a Playback menu
     QMenu *playbackMenu = menuBar()->addMenu(tr("&Playback"));
@@ -160,6 +84,35 @@ MainWindow::MainWindow(QWidget *parent)
     QAction *aboutUsAction = new QAction(tr("&About us"), this);
     connect(aboutUsAction, &QAction::triggered, this, &MainWindow::onAboutUs);
     helpMenu->addAction(aboutUsAction);
+}
+
+QDockWidget* MainWindow::createDockWidget(const QString& title, QAction* action, Qt::DockWidgetArea area)
+{
+    QDockWidget* dock = new QDockWidget(title, this);
+    QFrame* frame = new QFrame(dock);
+    frame->setFrameShape(QFrame::StyledPanel);
+    QLabel* label = new QLabel(tr("%1 content goes here").arg(title), frame);
+    QVBoxLayout* layout = new QVBoxLayout(frame);
+    layout->addWidget(label);
+    frame->setLayout(layout);
+    dock->setWidget(frame);
+    dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+    addDockWidget(area, dock);
+    dock->setVisible(true);
+    action->setChecked(true);
+
+    // Store the action in the map
+    dockActionMap[dock] = action;
+
+    // Connect visibility changed signal
+    connect(dock, &QDockWidget::visibilityChanged, this, [this, dock](bool visible) {
+        if (dockActionMap.contains(dock)) {
+            dockActionMap[dock]->setChecked(visible);
+        }
+    });
+
+    return dock;
 }
 
 MainWindow::~MainWindow()
@@ -192,23 +145,8 @@ void MainWindow::onAboutUs()
 
 void MainWindow::onStreams()
 {
-    // Create a dock widget if it doesn't exist
     if (!streamsDock) {
-        streamsDock = new QDockWidget(tr("Streams"), this);
-        QFrame* frame = new QFrame(streamsDock);
-        frame->setFrameShape(QFrame::StyledPanel);
-        QLabel* label = new QLabel(tr("Streams content goes here"), frame);
-        QVBoxLayout* layout = new QVBoxLayout(frame);
-        layout->addWidget(label);
-        frame->setLayout(layout);
-        streamsDock->setWidget(frame);
-        streamsDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-        streamsDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-        addDockWidget(Qt::LeftDockWidgetArea, streamsDock);
-
-        connect(streamsDock, &QDockWidget::visibilityChanged, this, [this](bool visible){
-            streamsAction->setChecked(visible);
-        });
+        streamsDock = createDockWidget(tr("Streams"), streamsAction, Qt::LeftDockWidgetArea);
     }
     bool willShow = !streamsDock->isVisible();
     streamsDock->setVisible(willShow);
@@ -218,21 +156,7 @@ void MainWindow::onStreams()
 void MainWindow::onSlice()
 {
     if (!sliceDock) {
-        sliceDock = new QDockWidget(tr("Slice"), this);
-        QFrame* frame = new QFrame(sliceDock);
-        frame->setFrameShape(QFrame::StyledPanel);
-        QLabel* label = new QLabel(tr("Slice content goes here"), frame);
-        QVBoxLayout* layout = new QVBoxLayout(frame);
-        layout->addWidget(label);
-        frame->setLayout(layout);
-        sliceDock->setWidget(frame);
-        sliceDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-        sliceDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-        addDockWidget(Qt::RightDockWidgetArea, sliceDock);
-
-        connect(sliceDock, &QDockWidget::visibilityChanged, this, [this](bool visible){
-            sliceAction->setChecked(visible);
-        });
+        sliceDock = createDockWidget(tr("Slice"), sliceAction, Qt::RightDockWidgetArea);
     }
     bool willShow = !sliceDock->isVisible();
     sliceDock->setVisible(willShow);
@@ -242,21 +166,7 @@ void MainWindow::onSlice()
 void MainWindow::onHex()
 {
     if (!hexDock) {
-        hexDock = new QDockWidget(tr("Hex"), this);
-        QFrame* frame = new QFrame(hexDock);
-        frame->setFrameShape(QFrame::StyledPanel);
-        QLabel* label = new QLabel(tr("Hex content goes here"), frame);
-        QVBoxLayout* layout = new QVBoxLayout(frame);
-        layout->addWidget(label);
-        frame->setLayout(layout);
-        hexDock->setWidget(frame);
-        hexDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-        hexDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-        addDockWidget(Qt::RightDockWidgetArea, hexDock);
-
-        connect(hexDock, &QDockWidget::visibilityChanged, this, [this](bool visible){
-            hexAction->setChecked(visible);
-        });
+        hexDock = createDockWidget(tr("Hex"), hexAction, Qt::RightDockWidgetArea);
     }
     bool willShow = !hexDock->isVisible();
     hexDock->setVisible(willShow);
@@ -266,21 +176,7 @@ void MainWindow::onHex()
 void MainWindow::onMacroblock()
 {
     if (!macroblockDock) {
-        macroblockDock = new QDockWidget(tr("Macroblock"), this);
-        QFrame* frame = new QFrame(macroblockDock);
-        frame->setFrameShape(QFrame::StyledPanel);
-        QLabel* label = new QLabel(tr("Macroblock content goes here"), frame);
-        QVBoxLayout* layout = new QVBoxLayout(frame);
-        layout->addWidget(label);
-        frame->setLayout(layout);
-        macroblockDock->setWidget(frame);
-        macroblockDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-        macroblockDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-        addDockWidget(Qt::RightDockWidgetArea, macroblockDock);
-
-        connect(macroblockDock, &QDockWidget::visibilityChanged, this, [this](bool visible){
-            macroblockAction->setChecked(visible);
-        });
+        macroblockDock = createDockWidget(tr("Macroblock"), macroblockAction, Qt::RightDockWidgetArea);
     }
     bool willShow = !macroblockDock->isVisible();
     macroblockDock->setVisible(willShow);

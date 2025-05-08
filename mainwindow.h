@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMap>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -27,6 +28,12 @@ private:
     QDockWidget *sliceDock = nullptr;
     QDockWidget *hexDock = nullptr;
     QDockWidget *macroblockDock = nullptr;
+
+    // Map to store dock widgets and their corresponding actions
+    QMap<QDockWidget*, QAction*> dockActionMap;
+
+    // Helper method to create dock widgets
+    QDockWidget* createDockWidget(const QString& title, QAction* action, Qt::DockWidgetArea area);
 
 private slots:
     void onOpenFile();

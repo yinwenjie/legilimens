@@ -20,10 +20,14 @@ public:
 
 private:
     Ui::MainWindow *ui;
+
+    QAction *sequenceAction = nullptr;
     QAction *streamsAction = nullptr;
     QAction *sliceAction = nullptr;
     QAction *hexAction = nullptr;
     QAction *macroblockAction = nullptr;
+
+    QDockWidget *sequenceDock = nullptr;
     QDockWidget *streamsDock = nullptr;
     QDockWidget *sliceDock = nullptr;
     QDockWidget *hexDock = nullptr;
@@ -48,5 +52,6 @@ private slots:
     void onPause();
     void onStop();
     void onResume();
+    void onSequence();
 };
 #endif // MAINWINDOW_H

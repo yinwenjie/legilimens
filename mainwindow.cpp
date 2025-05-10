@@ -35,6 +35,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Create a View menu
     QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
+
+    sequenceAction = new QAction(tr("&Sequence"), this);
+    sequenceAction->setCheckable(true);
+    connect(sequenceAction, &QAction::triggered, this, &MainWindow::onSequence);
+    viewMenu->addAction(sequenceAction);
+    sequenceDock = createDockWidget(tr("Sequence"), sequenceAction, Qt::TopDockWidgetArea);
     
     // Create view actions and dock widgets
     streamsAction = new QAction(tr("&Streams"), this);
@@ -203,4 +209,13 @@ void MainWindow::onResume()
 
 }
 
+void MainWindow::onSequence()
+{
+    if (!sequenceDock) {
+        sequenceDock = createDockWidget(tr("Sequence"), sequenceAction, Qt::TopDockWidgetArea);
+    }
+    bool willShow = !sequenceDock->isVisible();
+    sequenceDock->setVisible(willShow);
+    sequenceAction->setChecked(willShow);
+}
 

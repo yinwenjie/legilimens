@@ -15,6 +15,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     setWindowTitle("Legilimens");
 
+    // Set dock area priorities
+    // This ensures that when docking in adjacent areas, the specified corner is used
+    setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);    // Top area takes precedence over left
+    setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);  // Top area takes precedence over right
+    setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea); // Left area takes precedence over bottom
+    setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea); // Right area takes precedence over bottom
+
     // Create a File menu
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
 
@@ -59,13 +66,13 @@ MainWindow::MainWindow(QWidget *parent)
     hexAction->setCheckable(true);
     connect(hexAction, &QAction::triggered, this, &MainWindow::onHex);
     viewMenu->addAction(hexAction);
-    hexDock = createDockWidget(tr("Hex"), hexAction, Qt::RightDockWidgetArea);
+    hexDock = createDockWidget(tr("Hex"), hexAction, Qt::BottomDockWidgetArea);
 
     macroblockAction = new QAction(tr("&Macroblock"), this);
     macroblockAction->setCheckable(true);
     connect(macroblockAction, &QAction::triggered, this, &MainWindow::onMacroblock);
     viewMenu->addAction(macroblockAction);
-    macroblockDock = createDockWidget(tr("Macroblock"), macroblockAction, Qt::RightDockWidgetArea);
+    macroblockDock = createDockWidget(tr("Macroblock"), macroblockAction, Qt::BottomDockWidgetArea);
 
     // Create a Playback menu
     QMenu *playbackMenu = menuBar()->addMenu(tr("&Playback"));

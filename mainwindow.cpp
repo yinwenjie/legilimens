@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QFrame>
 #include <QVBoxLayout>
+#include <QResizeEvent>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -15,67 +16,79 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     setWindowTitle("Legilimens");
 
+    setupDockAreaPriorities();
+    createMenus();
+    setupDockWidgets();
+}
+
+void MainWindow::setupDockAreaPriorities()
+{
     // Set dock area priorities
-    // This ensures that when docking in adjacent areas, the specified corner is used
     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);    // Top area takes precedence over left
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);  // Top area takes precedence over right
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea); // Left area takes precedence over bottom
     setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea); // Right area takes precedence over bottom
+}
 
-    // Create a File menu
+void MainWindow::createMenus()
+{
+    createFileMenu();
+    createViewMenu();
+    createPlaybackMenu();
+    createHelpMenu();
+}
+
+void MainWindow::createFileMenu()
+{
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
 
-    // Create an Open File action
     QAction *openFileAction = new QAction(tr("&Open File"), this);
     connect(openFileAction, &QAction::triggered, this, &MainWindow::onOpenFile);
     fileMenu->addAction(openFileAction);
 
-    // Create a Close action
     QAction *closeFileAction = new QAction(tr("&Close"), this);
     connect(closeFileAction, &QAction::triggered, this, &MainWindow::onCloseFile);
     fileMenu->addAction(closeFileAction);
 
-    // Create an Exit action
     QAction *exitAction = new QAction(tr("E&xit"), this);
     connect(exitAction, &QAction::triggered, this, &QWidget::close);
     fileMenu->addAction(exitAction);
+}
 
-    // Create a View menu
+void MainWindow::createViewMenu()
+{
     QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
 
     sequenceAction = new QAction(tr("&Sequence"), this);
     sequenceAction->setCheckable(true);
     connect(sequenceAction, &QAction::triggered, this, &MainWindow::onSequence);
     viewMenu->addAction(sequenceAction);
-    sequenceDock = createDockWidget(tr("Sequence"), sequenceAction, Qt::TopDockWidgetArea);
-    
-    // Create view actions and dock widgets
+
     streamsAction = new QAction(tr("&Streams"), this);
     streamsAction->setCheckable(true);
     connect(streamsAction, &QAction::triggered, this, &MainWindow::onStreams);
     viewMenu->addAction(streamsAction);
-    streamsDock = createDockWidget(tr("Streams"), streamsAction, Qt::LeftDockWidgetArea);
 
     sliceAction = new QAction(tr("&Slice"), this);
     sliceAction->setCheckable(true);
     connect(sliceAction, &QAction::triggered, this, &MainWindow::onSlice);
     viewMenu->addAction(sliceAction);
-    sliceDock = createDockWidget(tr("Slice"), sliceAction, Qt::LeftDockWidgetArea);
 
     hexAction = new QAction(tr("&Hex"), this);
     hexAction->setCheckable(true);
     connect(hexAction, &QAction::triggered, this, &MainWindow::onHex);
     viewMenu->addAction(hexAction);
-    hexDock = createDockWidget(tr("Hex"), hexAction, Qt::BottomDockWidgetArea);
 
     macroblockAction = new QAction(tr("&Macroblock"), this);
     macroblockAction->setCheckable(true);
     connect(macroblockAction, &QAction::triggered, this, &MainWindow::onMacroblock);
     viewMenu->addAction(macroblockAction);
-    macroblockDock = createDockWidget(tr("Macroblock"), macroblockAction, Qt::BottomDockWidgetArea);
+}
 
-    // Create a Playback menu
+void MainWindow::createPlaybackMenu()
+{
     QMenu *playbackMenu = menuBar()->addMenu(tr("&Playback"));
+    
     QAction *playbackAction = new QAction(tr("&Play"), this);
     connect(playbackAction, &QAction::triggered, this, &MainWindow::onPlay);
     playbackMenu->addAction(playbackAction);
@@ -91,12 +104,23 @@ MainWindow::MainWindow(QWidget *parent)
     QAction *resumeAction = new QAction(tr("&Resume"), this);
     connect(resumeAction, &QAction::triggered, this, &MainWindow::onResume);
     playbackMenu->addAction(resumeAction);
+}
 
-    // Create a Help menu
+void MainWindow::createHelpMenu()
+{
     QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
     QAction *aboutUsAction = new QAction(tr("&About us"), this);
     connect(aboutUsAction, &QAction::triggered, this, &MainWindow::onAboutUs);
     helpMenu->addAction(aboutUsAction);
+}
+
+void MainWindow::setupDockWidgets()
+{
+    sequenceDock = createDockWidget(tr("Sequence"), sequenceAction, Qt::TopDockWidgetArea);
+    streamsDock = createDockWidget(tr("Streams"), streamsAction, Qt::LeftDockWidgetArea);
+    sliceDock = createDockWidget(tr("Slice"), sliceAction, Qt::LeftDockWidgetArea);
+    hexDock = createDockWidget(tr("Hex"), hexAction, Qt::BottomDockWidgetArea);
+    macroblockDock = createDockWidget(tr("Macroblock"), macroblockAction, Qt::BottomDockWidgetArea);
 }
 
 QDockWidget* MainWindow::createDockWidget(const QString& title, QAction* action, Qt::DockWidgetArea area)
@@ -224,5 +248,11 @@ void MainWindow::onSequence()
     bool willShow = !sequenceDock->isVisible();
     sequenceDock->setVisible(willShow);
     sequenceAction->setChecked(willShow);
+}
+
+void MainWindow::resizeEvent(QResizeEvent* event)
+{
+    QMainWindow::resizeEvent(event);
+    // Add any custom resize handling here if needed
 }
 

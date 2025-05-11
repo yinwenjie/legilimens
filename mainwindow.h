@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QMap>
+#include <QAction>
+#include <QDockWidget>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -17,6 +19,9 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+protected:
+    void resizeEvent(QResizeEvent* event) override;
 
 private:
     Ui::MainWindow *ui;
@@ -36,7 +41,14 @@ private:
     // Map to store dock widgets and their corresponding actions
     QMap<QDockWidget*, QAction*> dockActionMap;
 
-    // Helper method to create dock widgets
+    // Helper methods
+    void setupDockAreaPriorities();
+    void createMenus();
+    void createFileMenu();
+    void createViewMenu();
+    void createPlaybackMenu();
+    void createHelpMenu();
+    void setupDockWidgets();
     QDockWidget* createDockWidget(const QString& title, QAction* action, Qt::DockWidgetArea area);
 
 private slots:
@@ -47,11 +59,11 @@ private slots:
     void onSlice();
     void onHex();
     void onMacroblock();
+    void onSequence();
 
     void onPlay();
     void onPause();
     void onStop();
     void onResume();
-    void onSequence();
 };
 #endif // MAINWINDOW_H

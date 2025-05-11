@@ -79,6 +79,16 @@ build CMakeFiles/legilimens.dir/mainwindow.cpp.obj: CXX_COMPILER__legilimens_uns
   TARGET_COMPILE_PDB = CMakeFiles\legilimens.dir\
   TARGET_PDB = legilimens.pdb
 
+build CMakeFiles/legilimens.dir/dockwidgetmanager.cpp.obj: CXX_COMPILER__legilimens_unscanned_Debug E$:/Code/QT/legilimens/dockwidgetmanager.cpp || cmake_object_order_depends_target_legilimens
+  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
+  DEP_FILE = CMakeFiles\legilimens.dir\dockwidgetmanager.cpp.obj.d
+  FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
+  INCLUDES = -IE:/Code/QT/legilimens/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/legilimens_autogen/include -isystem D:/Developer/QT/6.9.0/mingw_64/include/QtCore -isystem D:/Developer/QT/6.9.0/mingw_64/include -isystem D:/Developer/QT/6.9.0/mingw_64/mkspecs/win32-g++ -isystem D:/Developer/QT/6.9.0/mingw_64/include/QtWidgets -isystem D:/Developer/QT/6.9.0/mingw_64/include/QtGui
+  OBJECT_DIR = CMakeFiles\legilimens.dir
+  OBJECT_FILE_DIR = CMakeFiles\legilimens.dir
+  TARGET_COMPILE_PDB = CMakeFiles\legilimens.dir\
+  TARGET_PDB = legilimens.pdb
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target legilimens
@@ -87,7 +97,7 @@ build CMakeFiles/legilimens.dir/mainwindow.cpp.obj: CXX_COMPILER__legilimens_uns
 #############################################
 # Link the executable legilimens.exe
 
-build legilimens.exe: CXX_EXECUTABLE_LINKER__legilimens_Debug CMakeFiles/legilimens.dir/legilimens_autogen/mocs_compilation.cpp.obj CMakeFiles/legilimens.dir/main.cpp.obj CMakeFiles/legilimens.dir/mainwindow.cpp.obj | D$:/Developer/QT/6.9.0/mingw_64/lib/libQt6Widgets.a D$:/Developer/QT/6.9.0/mingw_64/lib/libQt6Gui.a D$:/Developer/QT/6.9.0/mingw_64/lib/libQt6Core.a D$:/Developer/QT/6.9.0/mingw_64/lib/libQt6EntryPoint.a || legilimens_autogen legilimens_autogen_timestamp_deps
+build legilimens.exe: CXX_EXECUTABLE_LINKER__legilimens_Debug CMakeFiles/legilimens.dir/legilimens_autogen/mocs_compilation.cpp.obj CMakeFiles/legilimens.dir/main.cpp.obj CMakeFiles/legilimens.dir/mainwindow.cpp.obj CMakeFiles/legilimens.dir/dockwidgetmanager.cpp.obj | D$:/Developer/QT/6.9.0/mingw_64/lib/libQt6Widgets.a D$:/Developer/QT/6.9.0/mingw_64/lib/libQt6Gui.a D$:/Developer/QT/6.9.0/mingw_64/lib/libQt6Core.a D$:/Developer/QT/6.9.0/mingw_64/lib/libQt6EntryPoint.a || legilimens_autogen legilimens_autogen_timestamp_deps
   FLAGS = -DQT_QML_DEBUG -g
   LINK_FLAGS = -mwindows
   LINK_LIBRARIES = D:/Developer/QT/6.9.0/mingw_64/lib/libQt6Widgets.a  D:/Developer/QT/6.9.0/mingw_64/lib/libQt6Gui.a  D:/Developer/QT/6.9.0/mingw_64/lib/libQt6Core.a  -lmpr  -luserenv  -lmingw32  D:/Developer/QT/6.9.0/mingw_64/lib/libQt6EntryPoint.a  -lshell32  -ld3d11  -ldxgi  -ldxguid  -ld3d12  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32

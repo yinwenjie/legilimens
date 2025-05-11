@@ -443,6 +443,12 @@
 	"HEADERS" : 
 	[
 		[
+			"E:/Code/QT/legilimens/dockwidgetmanager.h",
+			"MU",
+			"EWIEGA46WW/moc_dockwidgetmanager.cpp",
+			null
+		],
+		[
 			"E:/Code/QT/legilimens/mainwindow.h",
 			"MU",
 			"EWIEGA46WW/moc_mainwindow.cpp",
@@ -520,6 +526,7 @@
 	"SETTINGS_FILE" : "E:/Code/QT/legilimens/build/Desktop_Qt_6_9_0_MinGW_64_bit-Debug/CMakeFiles/legilimens_autogen.dir/AutogenUsed.txt",
 	"SOURCES" : 
 	[
+		[ "E:/Code/QT/legilimens/dockwidgetmanager.cpp", "MU", null ],
 		[ "E:/Code/QT/legilimens/main.cpp", "MU", null ],
 		[ "E:/Code/QT/legilimens/mainwindow.cpp", "MU", null ]
 	],

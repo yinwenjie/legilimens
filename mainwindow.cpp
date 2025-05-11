@@ -59,30 +59,26 @@ void MainWindow::createViewMenu()
 {
     QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
 
-    sequenceAction = new QAction(tr("&Sequence"), this);
-    sequenceAction->setCheckable(true);
-    connect(sequenceAction, &QAction::triggered, this, &MainWindow::onSequence);
-    viewMenu->addAction(sequenceAction);
+    // Create managers and add their actions to the menu
+    sequenceManager = new DockWidgetManager(this);
+    viewMenu->addAction(sequenceManager->getAction());
+    connect(sequenceManager->getAction(), &QAction::triggered, this, &MainWindow::onSequence);
 
-    streamsAction = new QAction(tr("&Streams"), this);
-    streamsAction->setCheckable(true);
-    connect(streamsAction, &QAction::triggered, this, &MainWindow::onStreams);
-    viewMenu->addAction(streamsAction);
+    streamsManager = new DockWidgetManager(this);
+    viewMenu->addAction(streamsManager->getAction());
+    connect(streamsManager->getAction(), &QAction::triggered, this, &MainWindow::onStreams);
 
-    sliceAction = new QAction(tr("&Slice"), this);
-    sliceAction->setCheckable(true);
-    connect(sliceAction, &QAction::triggered, this, &MainWindow::onSlice);
-    viewMenu->addAction(sliceAction);
+    sliceManager = new DockWidgetManager(this);
+    viewMenu->addAction(sliceManager->getAction());
+    connect(sliceManager->getAction(), &QAction::triggered, this, &MainWindow::onSlice);
 
-    hexAction = new QAction(tr("&Hex"), this);
-    hexAction->setCheckable(true);
-    connect(hexAction, &QAction::triggered, this, &MainWindow::onHex);
-    viewMenu->addAction(hexAction);
+    hexManager = new DockWidgetManager(this);
+    viewMenu->addAction(hexManager->getAction());
+    connect(hexManager->getAction(), &QAction::triggered, this, &MainWindow::onHex);
 
-    macroblockAction = new QAction(tr("&Macroblock"), this);
-    macroblockAction->setCheckable(true);
-    connect(macroblockAction, &QAction::triggered, this, &MainWindow::onMacroblock);
-    viewMenu->addAction(macroblockAction);
+    macroblockManager = new DockWidgetManager(this);
+    viewMenu->addAction(macroblockManager->getAction());
+    connect(macroblockManager->getAction(), &QAction::triggered, this, &MainWindow::onMacroblock);
 }
 
 void MainWindow::createPlaybackMenu()
@@ -116,40 +112,19 @@ void MainWindow::createHelpMenu()
 
 void MainWindow::setupDockWidgets()
 {
-    sequenceDock = createDockWidget(tr("Sequence"), sequenceAction, Qt::TopDockWidgetArea);
-    streamsDock = createDockWidget(tr("Streams"), streamsAction, Qt::LeftDockWidgetArea);
-    sliceDock = createDockWidget(tr("Slice"), sliceAction, Qt::LeftDockWidgetArea);
-    hexDock = createDockWidget(tr("Hex"), hexAction, Qt::BottomDockWidgetArea);
-    macroblockDock = createDockWidget(tr("Macroblock"), macroblockAction, Qt::BottomDockWidgetArea);
-}
+    // Create dock widgets using managers
+    sequenceManager->createDockWidget(tr("Sequence"), Qt::TopDockWidgetArea);
+    streamsManager->createDockWidget(tr("Streams"), Qt::LeftDockWidgetArea);
+    sliceManager->createDockWidget(tr("Slice"), Qt::LeftDockWidgetArea);
+    hexManager->createDockWidget(tr("Hex"), Qt::BottomDockWidgetArea);
+    macroblockManager->createDockWidget(tr("Macroblock"), Qt::BottomDockWidgetArea);
 
-QDockWidget* MainWindow::createDockWidget(const QString& title, QAction* action, Qt::DockWidgetArea area)
-{
-    QDockWidget* dock = new QDockWidget(title, this);
-    QFrame* frame = new QFrame(dock);
-    frame->setFrameShape(QFrame::StyledPanel);
-    QLabel* label = new QLabel(tr("%1 content goes here").arg(title), frame);
-    QVBoxLayout* layout = new QVBoxLayout(frame);
-    layout->addWidget(label);
-    frame->setLayout(layout);
-    dock->setWidget(frame);
-    dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-    addDockWidget(area, dock);
-    dock->setVisible(true);
-    action->setChecked(true);
-
-    // Store the action in the map
-    dockActionMap[dock] = action;
-
-    // Connect visibility changed signal
-    connect(dock, &QDockWidget::visibilityChanged, this, [this, dock](bool visible) {
-        if (dockActionMap.contains(dock)) {
-            dockActionMap[dock]->setChecked(visible);
-        }
-    });
-
-    return dock;
+    // Add dock widgets to the main window
+    addDockWidget(Qt::TopDockWidgetArea, sequenceManager->getDockWidget());
+    addDockWidget(Qt::LeftDockWidgetArea, streamsManager->getDockWidget());
+    addDockWidget(Qt::LeftDockWidgetArea, sliceManager->getDockWidget());
+    addDockWidget(Qt::BottomDockWidgetArea, hexManager->getDockWidget());
+    addDockWidget(Qt::BottomDockWidgetArea, macroblockManager->getDockWidget());
 }
 
 MainWindow::~MainWindow()
@@ -182,42 +157,38 @@ void MainWindow::onAboutUs()
 
 void MainWindow::onStreams()
 {
-    if (!streamsDock) {
-        streamsDock = createDockWidget(tr("Streams"), streamsAction, Qt::LeftDockWidgetArea);
+    if (streamsManager && streamsManager->getDockWidget()) {
+        bool willShow = !streamsManager->getDockWidget()->isVisible();
+        streamsManager->getDockWidget()->setVisible(willShow);
+        streamsManager->getAction()->setChecked(willShow);
     }
-    bool willShow = !streamsDock->isVisible();
-    streamsDock->setVisible(willShow);
-    streamsAction->setChecked(willShow);
 }
 
 void MainWindow::onSlice()
 {
-    if (!sliceDock) {
-        sliceDock = createDockWidget(tr("Slice"), sliceAction, Qt::RightDockWidgetArea);
+    if (sliceManager && sliceManager->getDockWidget()) {
+        bool willShow = !sliceManager->getDockWidget()->isVisible();
+        sliceManager->getDockWidget()->setVisible(willShow);
+        sliceManager->getAction()->setChecked(willShow);
     }
-    bool willShow = !sliceDock->isVisible();
-    sliceDock->setVisible(willShow);
-    sliceAction->setChecked(willShow);
 }
 
 void MainWindow::onHex()
 {
-    if (!hexDock) {
-        hexDock = createDockWidget(tr("Hex"), hexAction, Qt::RightDockWidgetArea);
+    if (hexManager && hexManager->getDockWidget()) {
+        bool willShow = !hexManager->getDockWidget()->isVisible();
+        hexManager->getDockWidget()->setVisible(willShow);
+        hexManager->getAction()->setChecked(willShow);
     }
-    bool willShow = !hexDock->isVisible();
-    hexDock->setVisible(willShow);
-    hexAction->setChecked(willShow);
 }
 
 void MainWindow::onMacroblock()
 {
-    if (!macroblockDock) {
-        macroblockDock = createDockWidget(tr("Macroblock"), macroblockAction, Qt::RightDockWidgetArea);
+    if (macroblockManager && macroblockManager->getDockWidget()) {
+        bool willShow = !macroblockManager->getDockWidget()->isVisible();
+        macroblockManager->getDockWidget()->setVisible(willShow);
+        macroblockManager->getAction()->setChecked(willShow);
     }
-    bool willShow = !macroblockDock->isVisible();
-    macroblockDock->setVisible(willShow);
-    macroblockAction->setChecked(willShow);
 }
 
 void MainWindow::onPlay()
@@ -242,12 +213,11 @@ void MainWindow::onResume()
 
 void MainWindow::onSequence()
 {
-    if (!sequenceDock) {
-        sequenceDock = createDockWidget(tr("Sequence"), sequenceAction, Qt::TopDockWidgetArea);
+    if (sequenceManager && sequenceManager->getDockWidget()) {
+        bool willShow = !sequenceManager->getDockWidget()->isVisible();
+        sequenceManager->getDockWidget()->setVisible(willShow);
+        sequenceManager->getAction()->setChecked(willShow);
     }
-    bool willShow = !sequenceDock->isVisible();
-    sequenceDock->setVisible(willShow);
-    sequenceAction->setChecked(willShow);
 }
 
 void MainWindow::resizeEvent(QResizeEvent* event)

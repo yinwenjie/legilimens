@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QAction>
 #include <QDockWidget>
+#include "dockwidgetmanager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -26,20 +27,12 @@ protected:
 private:
     Ui::MainWindow *ui;
 
-    QAction *sequenceAction = nullptr;
-    QAction *streamsAction = nullptr;
-    QAction *sliceAction = nullptr;
-    QAction *hexAction = nullptr;
-    QAction *macroblockAction = nullptr;
-
-    QDockWidget *sequenceDock = nullptr;
-    QDockWidget *streamsDock = nullptr;
-    QDockWidget *sliceDock = nullptr;
-    QDockWidget *hexDock = nullptr;
-    QDockWidget *macroblockDock = nullptr;
-
-    // Map to store dock widgets and their corresponding actions
-    QMap<QDockWidget*, QAction*> dockActionMap;
+    // Replace individual dock and action members with DockWidgetManager instances
+    DockWidgetManager* sequenceManager = nullptr;
+    DockWidgetManager* streamsManager = nullptr;
+    DockWidgetManager* sliceManager = nullptr;
+    DockWidgetManager* hexManager = nullptr;
+    DockWidgetManager* macroblockManager = nullptr;
 
     // Helper methods
     void setupDockAreaPriorities();
@@ -49,7 +42,6 @@ private:
     void createPlaybackMenu();
     void createHelpMenu();
     void setupDockWidgets();
-    QDockWidget* createDockWidget(const QString& title, QAction* action, Qt::DockWidgetArea area);
 
 private slots:
     void onOpenFile();

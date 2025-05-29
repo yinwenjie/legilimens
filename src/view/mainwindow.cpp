@@ -60,42 +60,60 @@ void MainWindow::createFileMenu()
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
 
     QAction *openFileAction = new QAction(tr("&Open File"), this);
-    connect(openFileAction, &QAction::triggered, this, &MainWindow::onOpenFile);
-    fileMenu->addAction(openFileAction);
+    if (openFileAction) {
+        connect(openFileAction, &QAction::triggered, this, &MainWindow::onOpenFile);
+        fileMenu->addAction(openFileAction);
+    }
 
     QAction *closeFileAction = new QAction(tr("&Close"), this);
-    connect(closeFileAction, &QAction::triggered, this, &MainWindow::onCloseFile);
-    fileMenu->addAction(closeFileAction);
+    if (closeFileAction) {
+        connect(closeFileAction, &QAction::triggered, this, &MainWindow::onCloseFile);
+        fileMenu->addAction(closeFileAction);
+    }
 
     QAction *exitAction = new QAction(tr("E&xit"), this);
-    connect(exitAction, &QAction::triggered, this, &QWidget::close);
-    fileMenu->addAction(exitAction);
+    if (exitAction) {
+        connect(exitAction, &QAction::triggered, this, &QWidget::close);
+        fileMenu->addAction(exitAction);
+    }
 }
 
 void MainWindow::createViewMenu()
 {
     QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
 
-    // Create managers and add their actions to the menu
+    // Create managers first
     sequenceManager = new SequenceWidgetManager(this);
-    viewMenu->addAction(sequenceManager->getAction());
-    connect(sequenceManager->getAction(), &QAction::triggered, this, &MainWindow::onSequence);
-
     streamsManager = new StreamsWidgetManager(this);
-    viewMenu->addAction(streamsManager->getAction());
-    connect(streamsManager->getAction(), &QAction::triggered, this, &MainWindow::onStreams);
-
     sliceManager = new SliceWidgetManager(this);
-    viewMenu->addAction(sliceManager->getAction());
-    connect(sliceManager->getAction(), &QAction::triggered, this, &MainWindow::onSlice);
-
     hexManager = new HexWidgetManager(this);
-    viewMenu->addAction(hexManager->getAction());
-    connect(hexManager->getAction(), &QAction::triggered, this, &MainWindow::onHex);
-
     macroblockManager = new MacroblockWidgetManager(this);
-    viewMenu->addAction(macroblockManager->getAction());
-    connect(macroblockManager->getAction(), &QAction::triggered, this, &MainWindow::onMacroblock);
+
+    // Then add their actions to the menu
+    if (sequenceManager && sequenceManager->getAction()) {
+        viewMenu->addAction(sequenceManager->getAction());
+        connect(sequenceManager->getAction(), &QAction::triggered, this, &MainWindow::onSequence);
+    }
+
+    if (streamsManager && streamsManager->getAction()) {
+        viewMenu->addAction(streamsManager->getAction());
+        connect(streamsManager->getAction(), &QAction::triggered, this, &MainWindow::onStreams);
+    }
+
+    if (sliceManager && sliceManager->getAction()) {
+        viewMenu->addAction(sliceManager->getAction());
+        connect(sliceManager->getAction(), &QAction::triggered, this, &MainWindow::onSlice);
+    }
+
+    if (hexManager && hexManager->getAction()) {
+        viewMenu->addAction(hexManager->getAction());
+        connect(hexManager->getAction(), &QAction::triggered, this, &MainWindow::onHex);
+    }
+
+    if (macroblockManager && macroblockManager->getAction()) {
+        viewMenu->addAction(macroblockManager->getAction());
+        connect(macroblockManager->getAction(), &QAction::triggered, this, &MainWindow::onMacroblock);
+    }
 }
 
 void MainWindow::createPlaybackMenu()
@@ -103,28 +121,38 @@ void MainWindow::createPlaybackMenu()
     QMenu *playbackMenu = menuBar()->addMenu(tr("&Playback"));
     
     QAction *playbackAction = new QAction(tr("&Play"), this);
-    connect(playbackAction, &QAction::triggered, this, &MainWindow::onPlay);
-    playbackMenu->addAction(playbackAction);
+    if (playbackAction) {
+        connect(playbackAction, &QAction::triggered, this, &MainWindow::onPlay);
+        playbackMenu->addAction(playbackAction);
+    }
 
     QAction *pauseAction = new QAction(tr("&Pause"), this);
-    connect(pauseAction, &QAction::triggered, this, &MainWindow::onPause);
-    playbackMenu->addAction(pauseAction);
+    if (pauseAction) {
+        connect(pauseAction, &QAction::triggered, this, &MainWindow::onPause);
+        playbackMenu->addAction(pauseAction);
+    }
 
     QAction *stopAction = new QAction(tr("&Stop"), this);
-    connect(stopAction, &QAction::triggered, this, &MainWindow::onStop);
-    playbackMenu->addAction(stopAction);
+    if (stopAction) {
+        connect(stopAction, &QAction::triggered, this, &MainWindow::onStop);
+        playbackMenu->addAction(stopAction);
+    }
 
     QAction *resumeAction = new QAction(tr("&Resume"), this);
-    connect(resumeAction, &QAction::triggered, this, &MainWindow::onResume);
-    playbackMenu->addAction(resumeAction);
+    if (resumeAction) {
+        connect(resumeAction, &QAction::triggered, this, &MainWindow::onResume);
+        playbackMenu->addAction(resumeAction);
+    }
 }
 
 void MainWindow::createHelpMenu()
 {
     QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
     QAction *aboutUsAction = new QAction(tr("&About us"), this);
-    connect(aboutUsAction, &QAction::triggered, this, &MainWindow::onAboutUs);
-    helpMenu->addAction(aboutUsAction);
+    if (aboutUsAction) {
+        connect(aboutUsAction, &QAction::triggered, this, &MainWindow::onAboutUs);
+        helpMenu->addAction(aboutUsAction);
+    }
 }
 
 void MainWindow::setupDockWidgets()

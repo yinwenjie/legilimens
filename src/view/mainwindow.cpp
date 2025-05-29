@@ -1,5 +1,6 @@
-#include "mainwindow.h"
+#include "view/mainwindow.h"
 #include "./ui_mainwindow.h"
+#include "model/model.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -16,9 +17,21 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     setWindowTitle("Legilimens");
 
+    // Create and setup MVC components
+    Model *model = new Model(this);
+    controller = new Controller(model, this);
+
     setupDockAreaPriorities();
     createMenus();
     setupDockWidgets();
+    setupConnections();
+}
+
+void MainWindow::setupConnections()
+{
+    // Connect controller signals
+    connect(controller, &Controller::updateWindowTitle, this, &MainWindow::updateWindowTitle);
+    connect(controller, &Controller::showError, this, &MainWindow::showError);
 }
 
 void MainWindow::setupDockAreaPriorities()
@@ -134,20 +147,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::onOpenFile()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("All Files (*)"));
-    if (!fileName.isEmpty()) {
-        QFileInfo fileInfo(fileName);
-        qint64 size = fileInfo.size();
-        qDebug() << "Selected file:" << fileName << ", Size:" << size << "bytes";
-
-        // Update the window title to include the file path
-        setWindowTitle(QString("Legilimens - %1").arg(fileName));
-    }
+    controller->openFile();
 }
 
 void MainWindow::onCloseFile()
 {
-    setWindowTitle("Legilimens"); // Reset to default title
+    controller->closeFile();
 }
 
 void MainWindow::onAboutUs()
@@ -193,22 +198,22 @@ void MainWindow::onMacroblock()
 
 void MainWindow::onPlay()
 {
-
+    controller->play();
 }
 
 void MainWindow::onPause()
 {
-
+    controller->pause();
 }
 
 void MainWindow::onStop()
 {
-
+    controller->stop();
 }
 
 void MainWindow::onResume()
 {
-
+    controller->resume();
 }
 
 void MainWindow::onSequence()
@@ -224,5 +229,15 @@ void MainWindow::resizeEvent(QResizeEvent* event)
 {
     QMainWindow::resizeEvent(event);
     // Add any custom resize handling here if needed
+}
+
+void MainWindow::updateWindowTitle(const QString &title)
+{
+    setWindowTitle(title);
+}
+
+void MainWindow::showError(const QString &message)
+{
+    QMessageBox::critical(this, tr("Error"), message);
 }
 

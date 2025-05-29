@@ -5,7 +5,8 @@
 #include <QMap>
 #include <QAction>
 #include <QDockWidget>
-#include "dockwidgetmanager.h"
+#include "common/dockwidgetmanager.h"
+#include "controller/controller.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -26,6 +27,7 @@ protected:
 
 private:
     Ui::MainWindow *ui;
+    Controller *controller;
 
     // Replace individual dock and action members with DockWidgetManager instances
     DockWidgetManager* sequenceManager = nullptr;
@@ -42,6 +44,7 @@ private:
     void createPlaybackMenu();
     void createHelpMenu();
     void setupDockWidgets();
+    void setupConnections();
 
 private slots:
     void onOpenFile();
@@ -57,5 +60,8 @@ private slots:
     void onPause();
     void onStop();
     void onResume();
+
+    void updateWindowTitle(const QString &title);
+    void showError(const QString &message);
 };
 #endif // MAINWINDOW_H

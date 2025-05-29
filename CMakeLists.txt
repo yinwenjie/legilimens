@@ -12,13 +12,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
+# Add include directories
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/model
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/controller
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/view
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/common
+)
+
 set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
-        dockwidgetmanager.cpp
-        dockwidgetmanager.h
+        src/main.cpp
+        src/view/mainwindow.cpp
+        src/view/mainwindow.h
+        src/view/mainwindow.ui
+        src/common/dockwidgetmanager.cpp
+        src/common/dockwidgetmanager.h
+        src/model/model.cpp
+        src/model/model.h
+        src/controller/controller.cpp
+        src/controller/controller.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

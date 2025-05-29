@@ -89,31 +89,43 @@ void MainWindow::createViewMenu()
     hexManager = new HexWidgetManager(this);
     macroblockManager = new MacroblockWidgetManager(this);
 
-    // Then add their actions to the menu
-    if (sequenceManager && sequenceManager->getAction()) {
-        viewMenu->addAction(sequenceManager->getAction());
-        connect(sequenceManager->getAction(), &QAction::triggered, this, &MainWindow::onSequence);
-    }
+    // Create checkable actions for each view
+    QAction *sequenceAction = new QAction(tr("&Sequence"), this);
+    sequenceAction->setCheckable(true);
+    sequenceAction->setChecked(true);
+    viewMenu->addAction(sequenceAction);
+    connect(sequenceAction, &QAction::triggered, this, &MainWindow::onSequence);
 
-    if (streamsManager && streamsManager->getAction()) {
-        viewMenu->addAction(streamsManager->getAction());
-        connect(streamsManager->getAction(), &QAction::triggered, this, &MainWindow::onStreams);
-    }
+    QAction *streamsAction = new QAction(tr("&Streams"), this);
+    streamsAction->setCheckable(true);
+    streamsAction->setChecked(true);
+    viewMenu->addAction(streamsAction);
+    connect(streamsAction, &QAction::triggered, this, &MainWindow::onStreams);
 
-    if (sliceManager && sliceManager->getAction()) {
-        viewMenu->addAction(sliceManager->getAction());
-        connect(sliceManager->getAction(), &QAction::triggered, this, &MainWindow::onSlice);
-    }
+    QAction *sliceAction = new QAction(tr("&Slice"), this);
+    sliceAction->setCheckable(true);
+    sliceAction->setChecked(true);
+    viewMenu->addAction(sliceAction);
+    connect(sliceAction, &QAction::triggered, this, &MainWindow::onSlice);
 
-    if (hexManager && hexManager->getAction()) {
-        viewMenu->addAction(hexManager->getAction());
-        connect(hexManager->getAction(), &QAction::triggered, this, &MainWindow::onHex);
-    }
+    QAction *hexAction = new QAction(tr("&Hex"), this);
+    hexAction->setCheckable(true);
+    hexAction->setChecked(true);
+    viewMenu->addAction(hexAction);
+    connect(hexAction, &QAction::triggered, this, &MainWindow::onHex);
 
-    if (macroblockManager && macroblockManager->getAction()) {
-        viewMenu->addAction(macroblockManager->getAction());
-        connect(macroblockManager->getAction(), &QAction::triggered, this, &MainWindow::onMacroblock);
-    }
+    QAction *macroblockAction = new QAction(tr("&Macroblock"), this);
+    macroblockAction->setCheckable(true);
+    macroblockAction->setChecked(true);
+    viewMenu->addAction(macroblockAction);
+    connect(macroblockAction, &QAction::triggered, this, &MainWindow::onMacroblock);
+
+    // Store the actions in the managers
+    if (sequenceManager) sequenceManager->setAction(sequenceAction);
+    if (streamsManager) streamsManager->setAction(streamsAction);
+    if (sliceManager) sliceManager->setAction(sliceAction);
+    if (hexManager) hexManager->setAction(hexAction);
+    if (macroblockManager) macroblockManager->setAction(macroblockAction);
 }
 
 void MainWindow::createPlaybackMenu()
@@ -230,7 +242,9 @@ void MainWindow::onStreams()
     if (streamsManager && streamsManager->getDockWidget()) {
         bool willShow = !streamsManager->getDockWidget()->isVisible();
         streamsManager->getDockWidget()->setVisible(willShow);
-        streamsManager->getAction()->setChecked(willShow);
+        if (streamsManager->getAction()) {
+            streamsManager->getAction()->setChecked(willShow);
+        }
     }
 }
 
@@ -239,7 +253,9 @@ void MainWindow::onSlice()
     if (sliceManager && sliceManager->getDockWidget()) {
         bool willShow = !sliceManager->getDockWidget()->isVisible();
         sliceManager->getDockWidget()->setVisible(willShow);
-        sliceManager->getAction()->setChecked(willShow);
+        if (sliceManager->getAction()) {
+            sliceManager->getAction()->setChecked(willShow);
+        }
     }
 }
 
@@ -248,7 +264,9 @@ void MainWindow::onHex()
     if (hexManager && hexManager->getDockWidget()) {
         bool willShow = !hexManager->getDockWidget()->isVisible();
         hexManager->getDockWidget()->setVisible(willShow);
-        hexManager->getAction()->setChecked(willShow);
+        if (hexManager->getAction()) {
+            hexManager->getAction()->setChecked(willShow);
+        }
     }
 }
 
@@ -257,7 +275,9 @@ void MainWindow::onMacroblock()
     if (macroblockManager && macroblockManager->getDockWidget()) {
         bool willShow = !macroblockManager->getDockWidget()->isVisible();
         macroblockManager->getDockWidget()->setVisible(willShow);
-        macroblockManager->getAction()->setChecked(willShow);
+        if (macroblockManager->getAction()) {
+            macroblockManager->getAction()->setChecked(willShow);
+        }
     }
 }
 
@@ -286,7 +306,9 @@ void MainWindow::onSequence()
     if (sequenceManager && sequenceManager->getDockWidget()) {
         bool willShow = !sequenceManager->getDockWidget()->isVisible();
         sequenceManager->getDockWidget()->setVisible(willShow);
-        sequenceManager->getAction()->setChecked(willShow);
+        if (sequenceManager->getAction()) {
+            sequenceManager->getAction()->setChecked(willShow);
+        }
     }
 }
 

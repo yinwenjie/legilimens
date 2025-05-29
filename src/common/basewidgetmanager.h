@@ -17,6 +17,7 @@ public:
     // Common interface
     QAction* getAction() const { return action; }
     QDockWidget* getDockWidget() const { return dockWidget; }
+    void setAction(QAction* newAction) { action = newAction; }
     void createDockWidget(const QString &title, Qt::DockWidgetArea area);
     virtual void updateContent() = 0;  // Pure virtual function for content updates
 

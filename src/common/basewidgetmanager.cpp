@@ -1,43 +1,51 @@
-#include "basewidgetmanager.h"
+#include "common/basewidgetmanager.h"
 #include <QVBoxLayout>
 #include <QFrame>
 
 BaseWidgetManager::BaseWidgetManager(QWidget *parent)
     : QObject(parent)
-    , action(nullptr)
     , dockWidget(nullptr)
+    , action(nullptr)
     , contentWidget(nullptr)
 {
 }
 
 BaseWidgetManager::~BaseWidgetManager()
 {
-    delete dockWidget;
-    delete action;
+    if (dockWidget) {
+        delete dockWidget;
+    }
+    if (action) {
+        delete action;
+    }
 }
 
-void BaseWidgetManager::createDockWidget(const QString &title, Qt::DockWidgetArea area)
+void BaseWidgetManager::createDockWidget(const QString& title, Qt::DockWidgetArea area)
 {
     // Create the dock widget
     dockWidget = new QDockWidget(title, qobject_cast<QWidget*>(parent()));
     dockWidget->setAllowedAreas(area);
+    dockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 
-    // Create a frame to hold the content widget and provide a border
-    QFrame *frame = new QFrame(dockWidget);
+    // Create a frame to hold the content and provide a border
+    QFrame* frame = new QFrame(dockWidget);
     frame->setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
     frame->setStyleSheet("QFrame { background-color: #f0f0f0; border: 1px solid #a0a0a0; }");
-
+    
+    // Create a layout for the frame
+    QVBoxLayout* frameLayout = new QVBoxLayout(frame);
+    frameLayout->setContentsMargins(4, 4, 4, 4);  // Add small margins inside the frame
+    
     // Create the content widget
     contentWidget = new QWidget(frame);
-    QVBoxLayout *frameLayout = new QVBoxLayout(frame);
-    frameLayout->setContentsMargins(2, 2, 2, 2);  // Add small margin inside the frame
     frameLayout->addWidget(contentWidget);
     
-    dockWidget->setWidget(frame);
-
-    // Setup the content widget
+    // Set up the content widget's layout and connections
     setupContentWidget();
     setupConnections();
+    
+    // Set the frame as the dock widget's widget
+    dockWidget->setWidget(frame);
 
     // Create the action
     action = new QAction(title, this);

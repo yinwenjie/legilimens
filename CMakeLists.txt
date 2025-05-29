@@ -26,8 +26,18 @@ set(PROJECT_SOURCES
         src/view/mainwindow.cpp
         src/view/mainwindow.h
         src/view/mainwindow.ui
-        src/common/dockwidgetmanager.cpp
-        src/common/dockwidgetmanager.h
+        src/common/basewidgetmanager.cpp
+        src/common/basewidgetmanager.h
+        src/view/widgets/sequencewidgetmanager.cpp
+        src/view/widgets/sequencewidgetmanager.h
+        src/view/widgets/streamswidgetmanager.cpp
+        src/view/widgets/streamswidgetmanager.h
+        src/view/widgets/slicewidgetmanager.cpp
+        src/view/widgets/slicewidgetmanager.h
+        src/view/widgets/hexwidgetmanager.cpp
+        src/view/widgets/hexwidgetmanager.h
+        src/view/widgets/macroblockwidgetmanager.cpp
+        src/view/widgets/macroblockwidgetmanager.h
         src/model/model.cpp
         src/model/model.h
         src/controller/controller.cpp

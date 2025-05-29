@@ -5,8 +5,12 @@
 #include <QMap>
 #include <QAction>
 #include <QDockWidget>
-#include "common/dockwidgetmanager.h"
 #include "controller/controller.h"
+#include "view/widgets/sequencewidgetmanager.h"
+#include "view/widgets/streamswidgetmanager.h"
+#include "view/widgets/slicewidgetmanager.h"
+#include "view/widgets/hexwidgetmanager.h"
+#include "view/widgets/macroblockwidgetmanager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -29,12 +33,12 @@ private:
     Ui::MainWindow *ui;
     Controller *controller;
 
-    // Replace individual dock and action members with DockWidgetManager instances
-    DockWidgetManager* sequenceManager = nullptr;
-    DockWidgetManager* streamsManager = nullptr;
-    DockWidgetManager* sliceManager = nullptr;
-    DockWidgetManager* hexManager = nullptr;
-    DockWidgetManager* macroblockManager = nullptr;
+    // Specialized widget managers
+    SequenceWidgetManager* sequenceManager = nullptr;
+    StreamsWidgetManager* streamsManager = nullptr;
+    SliceWidgetManager* sliceManager = nullptr;
+    HexWidgetManager* hexManager = nullptr;
+    MacroblockWidgetManager* macroblockManager = nullptr;
 
     // Helper methods
     void setupDockAreaPriorities();

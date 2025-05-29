@@ -73,23 +73,23 @@ void MainWindow::createViewMenu()
     QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
 
     // Create managers and add their actions to the menu
-    sequenceManager = new DockWidgetManager(this);
+    sequenceManager = new SequenceWidgetManager(this);
     viewMenu->addAction(sequenceManager->getAction());
     connect(sequenceManager->getAction(), &QAction::triggered, this, &MainWindow::onSequence);
 
-    streamsManager = new DockWidgetManager(this);
+    streamsManager = new StreamsWidgetManager(this);
     viewMenu->addAction(streamsManager->getAction());
     connect(streamsManager->getAction(), &QAction::triggered, this, &MainWindow::onStreams);
 
-    sliceManager = new DockWidgetManager(this);
+    sliceManager = new SliceWidgetManager(this);
     viewMenu->addAction(sliceManager->getAction());
     connect(sliceManager->getAction(), &QAction::triggered, this, &MainWindow::onSlice);
 
-    hexManager = new DockWidgetManager(this);
+    hexManager = new HexWidgetManager(this);
     viewMenu->addAction(hexManager->getAction());
     connect(hexManager->getAction(), &QAction::triggered, this, &MainWindow::onHex);
 
-    macroblockManager = new DockWidgetManager(this);
+    macroblockManager = new MacroblockWidgetManager(this);
     viewMenu->addAction(macroblockManager->getAction());
     connect(macroblockManager->getAction(), &QAction::triggered, this, &MainWindow::onMacroblock);
 }

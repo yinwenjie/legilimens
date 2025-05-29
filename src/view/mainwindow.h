@@ -28,6 +28,7 @@ public:
 
 protected:
     void resizeEvent(QResizeEvent* event) override;
+    void showEvent(QShowEvent* event) override;
 
 private:
     Ui::MainWindow *ui;
@@ -49,6 +50,7 @@ private:
     void createHelpMenu();
     void setupDockWidgets();
     void setupConnections();
+    void setupInitialWidgetSizes();
 
 private slots:
     void onOpenFile();

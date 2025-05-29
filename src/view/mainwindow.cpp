@@ -9,6 +9,7 @@
 #include <QFrame>
 #include <QVBoxLayout>
 #include <QResizeEvent>
+#include <QShowEvent>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -25,6 +26,9 @@ MainWindow::MainWindow(QWidget *parent)
     createMenus();
     setupDockWidgets();
     setupConnections();
+
+    // Show window maximized
+    showMaximized();
 }
 
 void MainWindow::setupConnections()
@@ -138,6 +142,39 @@ void MainWindow::setupDockWidgets()
     addDockWidget(Qt::LeftDockWidgetArea, sliceManager->getDockWidget());
     addDockWidget(Qt::BottomDockWidgetArea, hexManager->getDockWidget());
     addDockWidget(Qt::BottomDockWidgetArea, macroblockManager->getDockWidget());
+
+    // Set initial sizes
+    int windowWidth = width();
+    int windowHeight = height();
+
+    // Set Stream and Slice views to 25% of window width
+    int sideWidth = static_cast<int>(windowWidth * 0.25);
+    if (streamsManager && streamsManager->getDockWidget()) {
+        streamsManager->getDockWidget()->setMinimumWidth(sideWidth);
+        streamsManager->getDockWidget()->resize(sideWidth, streamsManager->getDockWidget()->height());
+    }
+    if (sliceManager && sliceManager->getDockWidget()) {
+        sliceManager->getDockWidget()->setMinimumWidth(sideWidth);
+        sliceManager->getDockWidget()->resize(sideWidth, sliceManager->getDockWidget()->height());
+    }
+
+    // Set Sequence view to 20% of window height
+    int sequenceHeight = static_cast<int>(windowHeight * 0.2);
+    if (sequenceManager && sequenceManager->getDockWidget()) {
+        sequenceManager->getDockWidget()->setMinimumHeight(sequenceHeight);
+        sequenceManager->getDockWidget()->resize(sequenceManager->getDockWidget()->width(), sequenceHeight);
+    }
+
+    // Set Hex and Macroblock views to 50% of window height
+    int bottomHeight = static_cast<int>(windowHeight * 0.5);
+    if (hexManager && hexManager->getDockWidget()) {
+        hexManager->getDockWidget()->setMinimumHeight(bottomHeight);
+        hexManager->getDockWidget()->resize(hexManager->getDockWidget()->width(), bottomHeight);
+    }
+    if (macroblockManager && macroblockManager->getDockWidget()) {
+        macroblockManager->getDockWidget()->setMinimumHeight(bottomHeight);
+        macroblockManager->getDockWidget()->resize(macroblockManager->getDockWidget()->width(), bottomHeight);
+    }
 }
 
 MainWindow::~MainWindow()
@@ -239,5 +276,47 @@ void MainWindow::updateWindowTitle(const QString &title)
 void MainWindow::showError(const QString &message)
 {
     QMessageBox::critical(this, tr("Error"), message);
+}
+
+void MainWindow::showEvent(QShowEvent* event)
+{
+    QMainWindow::showEvent(event);
+    setupInitialWidgetSizes();
+}
+
+void MainWindow::setupInitialWidgetSizes()
+{
+    // Get the main window dimensions
+    int windowWidth = width();
+    int windowHeight = height();
+
+    // Set Stream and Slice views to 25% of window width
+    int sideWidth = static_cast<int>(windowWidth * 0.25);
+    if (streamsManager && streamsManager->getDockWidget()) {
+        streamsManager->getDockWidget()->setMinimumWidth(sideWidth);
+        streamsManager->getDockWidget()->resize(sideWidth, streamsManager->getDockWidget()->height());
+    }
+    if (sliceManager && sliceManager->getDockWidget()) {
+        sliceManager->getDockWidget()->setMinimumWidth(sideWidth);
+        sliceManager->getDockWidget()->resize(sideWidth, sliceManager->getDockWidget()->height());
+    }
+
+    // Set Sequence view to 20% of window height
+    int sequenceHeight = static_cast<int>(windowHeight * 0.2);
+    if (sequenceManager && sequenceManager->getDockWidget()) {
+        sequenceManager->getDockWidget()->setMinimumHeight(sequenceHeight);
+        sequenceManager->getDockWidget()->resize(sequenceManager->getDockWidget()->width(), sequenceHeight);
+    }
+
+    // Set Hex and Macroblock views to 50% of window height
+    int bottomHeight = static_cast<int>(windowHeight * 0.5);
+    if (hexManager && hexManager->getDockWidget()) {
+        hexManager->getDockWidget()->setMinimumHeight(bottomHeight);
+        hexManager->getDockWidget()->resize(hexManager->getDockWidget()->width(), bottomHeight);
+    }
+    if (macroblockManager && macroblockManager->getDockWidget()) {
+        macroblockManager->getDockWidget()->setMinimumHeight(bottomHeight);
+        macroblockManager->getDockWidget()->resize(macroblockManager->getDockWidget()->width(), bottomHeight);
+    }
 }
 

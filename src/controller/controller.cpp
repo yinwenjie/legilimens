@@ -26,10 +26,13 @@ void Controller::openFile()
 {
     QString fileName = QFileDialog::getOpenFileName(nullptr, tr("Open File"), "", tr("All Files (*)"));
     if (!fileName.isEmpty()) {
-        if (!model->openFile(fileName)) {
-            emit showError("Failed to open file");
-        }
+        openFile(fileName);
     }
+}
+
+bool Controller::openFile(const QString &filePath)
+{
+    return model->openFile(filePath);
 }
 
 void Controller::closeFile()

@@ -10,6 +10,8 @@
 #include <QVBoxLayout>
 #include <QResizeEvent>
 #include <QShowEvent>
+#include <QMimeData>
+#include <QUrl>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -17,6 +19,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     setWindowTitle("Legilimens");
+
+    // Enable drag and drop
+    setAcceptDrops(true);
 
     // Create and setup MVC components
     Model *model = new Model(this);
@@ -367,6 +372,35 @@ void MainWindow::setupInitialWidgetSizes()
     if (macroblockManager && macroblockManager->getDockWidget()) {
         macroblockManager->getDockWidget()->setMinimumHeight(bottomHeight);
         macroblockManager->getDockWidget()->resize(macroblockManager->getDockWidget()->width(), bottomHeight);
+    }
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent* event)
+{
+    // Accept the event if it contains URLs (files)
+    if (event->mimeData()->hasUrls()) {
+        event->acceptProposedAction();
+    }
+}
+
+void MainWindow::dropEvent(QDropEvent* event)
+{
+    const QMimeData* mimeData = event->mimeData();
+    qDebug() << "Drop event received";
+    // Check if the dropped data contains URLs
+    if (mimeData->hasUrls()) {
+        QList<QUrl> urlList = mimeData->urls();
+        qDebug() << "URL list: " << urlList;
+        // Get the first file URL
+        if (!urlList.isEmpty()) {
+            QString filePath = urlList.first().toLocalFile();
+            if (!filePath.isEmpty()) {
+                // Use the controller to open the file
+                if (!controller->openFile(filePath)) {
+                    showError("Failed to open file");
+                }
+            }
+        }
     }
 }
 

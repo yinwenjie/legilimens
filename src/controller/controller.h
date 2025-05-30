@@ -15,6 +15,7 @@ public:
 
     // File operations
     void openFile();
+    bool openFile(const QString &filePath);
     void closeFile();
 
     // Playback operations

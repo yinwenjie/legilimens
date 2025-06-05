@@ -65,8 +65,8 @@ set(PROJECT_SOURCES
         src/view/widgets/hexwidgetmanager.h
         src/view/widgets/macroblockwidgetmanager.cpp
         src/view/widgets/macroblockwidgetmanager.h
-        src/model/model.cpp
-        src/model/model.h
+        src/model/mediafilemanager.cpp
+        src/model/mediafilemanager.h
         src/model/streamtreemodel.cpp
         src/model/streamtreemodel.h
         src/controller/controller.cpp

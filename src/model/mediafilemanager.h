@@ -1,17 +1,17 @@
-#ifndef MODEL_H
-#define MODEL_H
+#ifndef MEDIAFILEMANAGER_H
+#define MEDIAFILEMANAGER_H
 
 #include <QObject>
 #include <QString>
 #include <QFileInfo>
 
-class Model : public QObject
+class MediaFileManager : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit Model(QObject *parent = nullptr);
-    virtual ~Model();
+    explicit MediaFileManager(QObject *parent = nullptr);
+    virtual ~MediaFileManager();
 
     // File operations
     bool openFile(const QString &filePath);
@@ -29,4 +29,4 @@ private:
     qint64 fileSize;
 };
 
-#endif // MODEL_H 
+#endif // MEDIAFILEMANAGER_H 

@@ -1,6 +1,7 @@
 #include "view/mainwindow.h"
 #include "./ui_mainwindow.h"
-#include "model/model.h"
+#include "model/mediafilemanager.h"
+#include "controller/controller.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -12,10 +13,13 @@
 #include <QShowEvent>
 #include <QMimeData>
 #include <QUrl>
+#include <QMenuBar>
+#include <QStatusBar>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , controller(nullptr)
 {
     ui->setupUi(this);
     setWindowTitle("Legilimens");
@@ -24,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
     setAcceptDrops(true);
 
     // Create and setup MVC components
-    Model *model = new Model(this);
+    MediaFileManager *model = new MediaFileManager(this);
     controller = new Controller(model, this);
 
     setupDockAreaPriorities();
@@ -40,7 +44,7 @@ void MainWindow::setupConnections()
 {
     // Connect controller signals
     connect(controller, &Controller::updateWindowTitle, this, &MainWindow::updateWindowTitle);
-    connect(controller, &Controller::showError, this, &MainWindow::showError);
+    connect(controller, &Controller::error, this, &MainWindow::showError);
 }
 
 void MainWindow::setupDockAreaPriorities()

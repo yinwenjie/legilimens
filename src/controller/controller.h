@@ -3,15 +3,15 @@
 
 #include <QObject>
 #include <QString>
-#include "model/model.h"
+#include "model/mediafilemanager.h"
 
 class Controller : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit Controller(Model *model, QObject *parent = nullptr);
-    virtual ~Controller();
+    explicit Controller(MediaFileManager *model, QObject *parent = nullptr);
+    ~Controller();
 
     // File operations
     void openFile();
@@ -26,10 +26,10 @@ public:
 
 signals:
     void updateWindowTitle(const QString &title);
-    void showError(const QString &message);
+    void error(const QString &message);
 
 private:
-    Model *model;
+    MediaFileManager *model;
 };
 
 #endif // CONTROLLER_H 

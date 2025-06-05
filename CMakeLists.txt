@@ -40,6 +40,8 @@ set(PROJECT_SOURCES
         src/view/widgets/macroblockwidgetmanager.h
         src/model/model.cpp
         src/model/model.h
+        src/model/streamtreemodel.cpp
+        src/model/streamtreemodel.h
         src/controller/controller.cpp
         src/controller/controller.h
 )

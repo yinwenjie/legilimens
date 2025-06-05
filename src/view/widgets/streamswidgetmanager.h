@@ -2,6 +2,9 @@
 #define STREAMSWIDGETMANAGER_H
 
 #include "common/basewidgetmanager.h"
+#include <QTreeView>
+
+class StreamTreeModel;
 
 class StreamsWidgetManager : public BaseWidgetManager
 {
@@ -14,6 +17,10 @@ public:
 protected:
     void setupContentWidget() override;
     void setupConnections() override;
+
+private:
+    QTreeView *treeView;
+    StreamTreeModel *streamModel;
 };
 
 #endif // STREAMSWIDGETMANAGER_H 

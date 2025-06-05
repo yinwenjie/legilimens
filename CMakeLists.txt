@@ -2,6 +2,33 @@ cmake_minimum_required(VERSION 3.16)
 
 project(legilimens VERSION 0.1 LANGUAGES CXX)
 
+# FFmpeg configuration for Linux
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(FFMPEG_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/third_party/FFmpeg/output_linux")
+
+    # Add FFmpeg include directories
+    include_directories(
+        ${FFMPEG_ROOT}/include
+    )
+
+    # Add FFmpeg library directories
+    link_directories(
+        ${FFMPEG_ROOT}/lib
+    )
+
+    # Define FFmpeg libraries
+    set(FFMPEG_LIBS
+        avcodec
+        avformat
+        avutil
+        avfilter
+        avdevice
+        avresample
+        swresample
+        swscale
+    )
+endif()
+
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -70,6 +97,11 @@ else()
 endif()
 
 target_link_libraries(legilimens PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+
+# Add FFmpeg libraries for Linux
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    target_link_libraries(legilimens PRIVATE ${FFMPEG_LIBS})
+endif()
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

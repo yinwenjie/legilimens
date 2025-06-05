@@ -56,3 +56,6 @@ Thumbs.db
 
 # Ignore user-specific CMakeLists.txt files
 CMakeLists.txt.user
+
+# Third-party source codes
+third_party/FFmpeg

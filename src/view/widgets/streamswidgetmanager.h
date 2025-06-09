@@ -20,6 +20,7 @@ public:
     void setupContentWidget() override;
     void setupConnections() override;
     void updateContent() override;
+    void clearContent() override;
 
     // Connect to controller for stream updates
     void connectToController(Controller *controller);

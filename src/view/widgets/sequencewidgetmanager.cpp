@@ -1,5 +1,7 @@
 #include "view/widgets/sequencewidgetmanager.h"
 #include <QVBoxLayout>
+#include <QLabel>
+#include <QDebug>
 
 SequenceWidgetManager::SequenceWidgetManager(QWidget *parent)
     : BaseWidgetManager(parent)
@@ -8,16 +10,27 @@ SequenceWidgetManager::SequenceWidgetManager(QWidget *parent)
 
 void SequenceWidgetManager::setupContentWidget()
 {
+    // Create layout
     QVBoxLayout *layout = new QVBoxLayout(contentWidget);
-    // Basic layout setup - will be populated with actual widgets later
+    layout->setContentsMargins(0, 0, 0, 0);
+
+    // Add a placeholder label
+    QLabel *label = new QLabel("Sequence View", contentWidget);
+    layout->addWidget(label);
 }
 
 void SequenceWidgetManager::setupConnections()
 {
-    // Will be implemented when data management is decided
+    // Setup any necessary connections here
 }
 
 void SequenceWidgetManager::updateContent()
 {
-    // Will be implemented when data management is decided
+    // Update sequence content here
+}
+
+void SequenceWidgetManager::clearContent()
+{
+    // Clear sequence widget content
+    qDebug() << "Cleared sequence widget content";
 } 

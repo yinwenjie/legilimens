@@ -71,5 +71,6 @@ private slots:
 
     void updateWindowTitle(const QString &title);
     void showError(const QString &message);
+    void clearAllWidgets();
 };
 #endif // MAINWINDOW_H

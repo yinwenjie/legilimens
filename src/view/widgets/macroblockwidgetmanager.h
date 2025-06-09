@@ -10,6 +10,7 @@ class MacroblockWidgetManager : public BaseWidgetManager
 public:
     explicit MacroblockWidgetManager(QWidget *parent = nullptr);
     void updateContent() override;
+    void clearContent() override;
 
 protected:
     void setupContentWidget() override;

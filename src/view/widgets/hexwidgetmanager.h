@@ -10,6 +10,7 @@ class HexWidgetManager : public BaseWidgetManager
 public:
     explicit HexWidgetManager(QWidget *parent = nullptr);
     void updateContent() override;
+    void clearContent() override;
 
 protected:
     void setupContentWidget() override;

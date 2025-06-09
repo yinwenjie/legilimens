@@ -50,6 +50,7 @@ void MainWindow::setupConnections()
     // Connect controller signals
     connect(controller, &Controller::updateWindowTitle, this, &MainWindow::updateWindowTitle);
     connect(controller, &Controller::error, this, &MainWindow::showError);
+    connect(controller, &Controller::clearAllWidgets, this, &MainWindow::clearAllWidgets);
 }
 
 void MainWindow::setupDockAreaPriorities()
@@ -345,6 +346,30 @@ void MainWindow::updateWindowTitle(const QString &title)
 void MainWindow::showError(const QString &message)
 {
     QMessageBox::critical(this, tr("Error"), message);
+}
+
+void MainWindow::clearAllWidgets()
+{
+    qDebug() << "Clearing all widget content";
+    
+    // Clear all widget managers
+    if (sequenceManager) {
+        sequenceManager->clearContent();
+    }
+    if (streamsManager) {
+        streamsManager->clearContent();
+    }
+    if (sliceManager) {
+        sliceManager->clearContent();
+    }
+    if (hexManager) {
+        hexManager->clearContent();
+    }
+    if (macroblockManager) {
+        macroblockManager->clearContent();
+    }
+    
+    qDebug() << "All widgets cleared successfully";
 }
 
 void MainWindow::showEvent(QShowEvent* event)

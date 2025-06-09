@@ -20,6 +20,7 @@ public:
     void setAction(QAction* newAction) { action = newAction; }
     void createDockWidget(const QString &title, Qt::DockWidgetArea area);
     virtual void updateContent() = 0;  // Pure virtual function for content updates
+    virtual void clearContent() = 0;   // Pure virtual function for clearing content
 
 protected:
     QAction *action;

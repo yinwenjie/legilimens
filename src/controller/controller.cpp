@@ -13,6 +13,7 @@ Controller::Controller(MediaFileManager *model, QObject *parent)
 
     connect(model, &MediaFileManager::fileClosed, this, [this]() {
         emit updateWindowTitle("Legilimens");
+        emit clearAllWidgets();
     });
 
     connect(model, &MediaFileManager::error, this, &Controller::error);

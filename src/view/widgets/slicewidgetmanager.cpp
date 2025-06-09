@@ -1,5 +1,7 @@
 #include "view/widgets/slicewidgetmanager.h"
 #include <QVBoxLayout>
+#include <QLabel>
+#include <QDebug>
 
 SliceWidgetManager::SliceWidgetManager(QWidget *parent)
     : BaseWidgetManager(parent)
@@ -8,16 +10,27 @@ SliceWidgetManager::SliceWidgetManager(QWidget *parent)
 
 void SliceWidgetManager::setupContentWidget()
 {
+    // Create layout
     QVBoxLayout *layout = new QVBoxLayout(contentWidget);
-    // Basic layout setup - will be populated with actual widgets later
+    layout->setContentsMargins(0, 0, 0, 0);
+
+    // Add a placeholder label
+    QLabel *label = new QLabel("Slice View", contentWidget);
+    layout->addWidget(label);
 }
 
 void SliceWidgetManager::setupConnections()
 {
-    // Will be implemented when data management is decided
+    // Setup any necessary connections here
 }
 
 void SliceWidgetManager::updateContent()
 {
-    // Will be implemented when data management is decided
+    // Update slice content here
+}
+
+void SliceWidgetManager::clearContent()
+{
+    // Clear slice widget content
+    qDebug() << "Cleared slice widget content";
 } 

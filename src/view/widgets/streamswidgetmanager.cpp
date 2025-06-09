@@ -2,6 +2,7 @@
 #include "model/streamtreemodel.h"
 #include "controller/controller.h"
 #include <QVBoxLayout>
+#include <QDebug>
 
 StreamsWidgetManager::StreamsWidgetManager(QWidget *parent)
     : BaseWidgetManager(parent)
@@ -65,6 +66,14 @@ void StreamsWidgetManager::updateContent()
     if (streamModel) {
         // The model will be updated through the onStreamInfoUpdated slot
         // when connected to the controller
+    }
+}
+
+void StreamsWidgetManager::clearContent()
+{
+    if (streamModel) {
+        streamModel->clearStreamData();
+        qDebug() << "Cleared streams widget content";
     }
 }
 

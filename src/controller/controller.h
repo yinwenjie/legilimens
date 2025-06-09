@@ -43,6 +43,7 @@ signals:
     void slicesParsed(const QList<SliceInfo> &slices);
     void parsingProgress(int percentage);
     void parsingFinished();
+    void clearAllWidgets();
 
 private:
     MediaFileManager *model;

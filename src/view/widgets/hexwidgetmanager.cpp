@@ -1,5 +1,7 @@
 #include "view/widgets/hexwidgetmanager.h"
 #include <QVBoxLayout>
+#include <QLabel>
+#include <QDebug>
 
 HexWidgetManager::HexWidgetManager(QWidget *parent)
     : BaseWidgetManager(parent)
@@ -8,16 +10,27 @@ HexWidgetManager::HexWidgetManager(QWidget *parent)
 
 void HexWidgetManager::setupContentWidget()
 {
+    // Create layout
     QVBoxLayout *layout = new QVBoxLayout(contentWidget);
-    // Basic layout setup - will be populated with actual widgets later
+    layout->setContentsMargins(0, 0, 0, 0);
+
+    // Add a placeholder label
+    QLabel *label = new QLabel("Hex View", contentWidget);
+    layout->addWidget(label);
 }
 
 void HexWidgetManager::setupConnections()
 {
-    // Will be implemented when data management is decided
+    // Setup any necessary connections here
 }
 
 void HexWidgetManager::updateContent()
 {
-    // Will be implemented when data management is decided
+    // Update hex content here
+}
+
+void HexWidgetManager::clearContent()
+{
+    // Clear hex widget content
+    qDebug() << "Cleared hex widget content";
 } 

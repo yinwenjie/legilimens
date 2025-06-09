@@ -1,5 +1,7 @@
 #include "view/widgets/macroblockwidgetmanager.h"
 #include <QVBoxLayout>
+#include <QLabel>
+#include <QDebug>
 
 MacroblockWidgetManager::MacroblockWidgetManager(QWidget *parent)
     : BaseWidgetManager(parent)
@@ -8,16 +10,27 @@ MacroblockWidgetManager::MacroblockWidgetManager(QWidget *parent)
 
 void MacroblockWidgetManager::setupContentWidget()
 {
+    // Create layout
     QVBoxLayout *layout = new QVBoxLayout(contentWidget);
-    // Basic layout setup - will be populated with actual widgets later
+    layout->setContentsMargins(0, 0, 0, 0);
+
+    // Add a placeholder label
+    QLabel *label = new QLabel("Macroblock View", contentWidget);
+    layout->addWidget(label);
 }
 
 void MacroblockWidgetManager::setupConnections()
 {
-    // Will be implemented when data management is decided
+    // Setup any necessary connections here
 }
 
 void MacroblockWidgetManager::updateContent()
 {
-    // Will be implemented when data management is decided
+    // Update macroblock content here
+}
+
+void MacroblockWidgetManager::clearContent()
+{
+    // Clear macroblock widget content
+    qDebug() << "Cleared macroblock widget content";
 } 

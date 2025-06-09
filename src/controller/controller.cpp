@@ -2,20 +2,20 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-Controller::Controller(MediaFileManager *model, QObject *parent)
+Controller::Controller(MediaFileManager *mediaFileManager, QObject *parent)
     : QObject(parent)
-    , model(model)
+    , mediaFileManager(mediaFileManager)
 {
-    // Connect model signals
-    connect(model, &MediaFileManager::fileOpened, this, [this](const QString &filePath) {
+    // Connect mediaFileManager signals
+    connect(mediaFileManager, &MediaFileManager::fileOpened, this, [this](const QString &filePath) {
         emit updateWindowTitle(QString("Legilimens - %1").arg(filePath));
     });
 
-    connect(model, &MediaFileManager::fileClosed, this, [this]() {
+    connect(mediaFileManager, &MediaFileManager::fileClosed, this, [this]() {
         emit updateWindowTitle("Legilimens");
     });
 
-    connect(model, &MediaFileManager::error, this, &Controller::error);
+    connect(mediaFileManager, &MediaFileManager::error, this, &Controller::error);
 }
 
 Controller::~Controller()
@@ -36,12 +36,12 @@ bool Controller::openFile(const QString &filePath)
         emit error("No file selected");
         return false;
     }
-    return model->openFile(filePath);
+    return mediaFileManager->openFile(filePath);
 }
 
 void Controller::closeFile()
 {
-    model->closeFile();
+    mediaFileManager->closeFile();
 }
 
 void Controller::play()

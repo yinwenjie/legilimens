@@ -29,7 +29,7 @@ signals:
     void error(const QString &message);
 
 private:
-    MediaFileManager *model;
+    MediaFileManager *mediaFileManager;
 };
 
 #endif // CONTROLLER_H 

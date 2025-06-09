@@ -19,10 +19,19 @@ Controller::Controller(MediaFileManager *model, QObject *parent)
 
     // Forward stream information updates using queued connection to prevent destruction issues
     connect(model, &MediaFileManager::streamsInfoUpdated, this, &Controller::streamInfoUpdated, Qt::QueuedConnection);
+
+    // Forward parser thread signals
+    connect(model, &MediaFileManager::slicesParsed, this, &Controller::slicesParsed, Qt::QueuedConnection);
+    connect(model, &MediaFileManager::parsingProgress, this, &Controller::parsingProgress, Qt::QueuedConnection);
+    connect(model, &MediaFileManager::parsingFinished, this, &Controller::parsingFinished, Qt::QueuedConnection);
 }
 
 Controller::~Controller()
 {
+    // Stop any ongoing parsing
+    if (model) {
+        model->stopParsing();
+    }
 }
 
 void Controller::openFile()
@@ -65,4 +74,35 @@ void Controller::stop()
 void Controller::resume()
 {
     // TODO: Implement resume logic
+}
+
+void Controller::startParsing()
+{
+    if (model) {
+        model->startParsing();
+    }
+}
+
+void Controller::stopParsing()
+{
+    if (model) {
+        model->stopParsing();
+    }
+}
+
+bool Controller::isParsing() const
+{
+    return model ? model->isParsing() : false;
+}
+
+void Controller::setAutoParsingEnabled(bool enabled)
+{
+    if (model) {
+        model->setAutoParsingEnabled(enabled);
+    }
+}
+
+bool Controller::isAutoParsingEnabled() const
+{
+    return model ? model->isAutoParsingEnabled() : false;
 } 

@@ -12,6 +12,24 @@ struct AVStream;
 struct AVPacket;
 struct AVFrame;
 
+// Forward declaration for parser thread
+class MediaParserThread;
+
+// Slice information structure
+struct SliceInfo {
+    int streamIndex;
+    int64_t pts;          // Presentation timestamp
+    int64_t dts;          // Decode timestamp
+    int64_t duration;     // Duration
+    int64_t pos;          // Position in file
+    int size;             // Size in bytes
+    bool isKeyFrame;      // Is this a key frame
+    QString streamType;   // "video" or "audio"
+    
+    // Constructor
+    SliceInfo() : streamIndex(-1), pts(0), dts(0), duration(0), pos(0), size(0), isKeyFrame(false) {}
+};
+
 // Video stream information structure
 struct VideoStreamInfo {
     int streamIndex;
@@ -58,8 +76,10 @@ struct AudioStreamInfo {
 // Register types with Qt's meta-object system
 Q_DECLARE_METATYPE(VideoStreamInfo)
 Q_DECLARE_METATYPE(AudioStreamInfo)
+Q_DECLARE_METATYPE(SliceInfo)
 Q_DECLARE_METATYPE(QList<VideoStreamInfo>)
 Q_DECLARE_METATYPE(QList<AudioStreamInfo>)
+Q_DECLARE_METATYPE(QList<SliceInfo>)
 
 class MediaFileManager : public QObject
 {
@@ -96,11 +116,23 @@ public:
     int getAudioStreamCount() const;
     int getTotalStreamCount() const;
 
+    // Parser thread management
+    void startParsing();
+    void stopParsing();
+    bool isParsing() const;
+    
+    // Auto-parsing control
+    void setAutoParsingEnabled(bool enabled);
+    bool isAutoParsingEnabled() const;
+
 signals:
     void fileOpened(const QString &filePath);
     void fileClosed();
     void error(const QString &message);
     void streamsInfoUpdated(const QList<VideoStreamInfo> &videoStreams, const QList<AudioStreamInfo> &audioStreams);
+    void slicesParsed(const QList<SliceInfo> &slices);
+    void parsingProgress(int percentage);
+    void parsingFinished();
 
 private:
     QString currentFilePath;
@@ -116,6 +148,13 @@ private:
     // Stream information lists
     QList<VideoStreamInfo> videoStreamInfoList;
     QList<AudioStreamInfo> audioStreamInfoList;
+
+    // Parser thread
+    MediaParserThread *parserThread;
+    QThread *workerThread;
+
+    // Auto-parsing flag
+    bool autoParsingEnabled;
 
     // Helper methods
     void cleanupFFmpegResources();

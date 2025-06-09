@@ -67,6 +67,8 @@ set(PROJECT_SOURCES
         src/view/widgets/macroblockwidgetmanager.h
         src/model/mediafilemanager.cpp
         src/model/mediafilemanager.h
+        src/model/mediaparserthread.cpp
+        src/model/mediaparserthread.h
         src/model/streamtreemodel.cpp
         src/model/streamtreemodel.h
         src/controller/controller.cpp

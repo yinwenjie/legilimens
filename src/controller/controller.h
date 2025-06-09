@@ -23,7 +23,16 @@ public:
     void pause();
     void stop();
     void resume();
-
+    
+    // Parser thread operations
+    void startParsing();
+    void stopParsing();
+    bool isParsing() const;
+    
+    // Auto-parsing control
+    void setAutoParsingEnabled(bool enabled);
+    bool isAutoParsingEnabled() const;
+    
     // Stream information access
     MediaFileManager* getMediaFileManager() const { return model; }
 
@@ -31,6 +40,9 @@ signals:
     void updateWindowTitle(const QString &title);
     void error(const QString &message);
     void streamInfoUpdated(const QList<VideoStreamInfo> &videoStreams, const QList<AudioStreamInfo> &audioStreams);
+    void slicesParsed(const QList<SliceInfo> &slices);
+    void parsingProgress(int percentage);
+    void parsingFinished();
 
 private:
     MediaFileManager *model;

@@ -1,6 +1,8 @@
 #include "mediafilemanager.h"
+#include "mediaparserthread.h"
 #include <QFileInfo>
 #include <QDebug>
+#include <QThread>
 
 // FFmpeg headers
 extern "C" {
@@ -19,16 +21,24 @@ MediaFileManager::MediaFileManager(QObject *parent)
     , audioStream(nullptr)
     , packet(nullptr)
     , frame(nullptr)
+    , parserThread(nullptr)
+    , workerThread(nullptr)
+    , autoParsingEnabled(true)  // Enable auto-parsing by default
 {
     // Register meta types for signal-slot system
     qRegisterMetaType<VideoStreamInfo>("VideoStreamInfo");
     qRegisterMetaType<AudioStreamInfo>("AudioStreamInfo");
+    qRegisterMetaType<SliceInfo>("SliceInfo");
     qRegisterMetaType<QList<VideoStreamInfo>>("QList<VideoStreamInfo>");
     qRegisterMetaType<QList<AudioStreamInfo>>("QList<AudioStreamInfo>");
+    qRegisterMetaType<QList<SliceInfo>>("QList<SliceInfo>");
 }
 
 MediaFileManager::~MediaFileManager()
 {
+    // Stop parsing thread first
+    stopParsing();
+    
     // Disconnect all signals to prevent issues during destruction
     disconnect();
     closeFile();
@@ -63,6 +73,9 @@ bool MediaFileManager::openFile(const QString &filePath)
 void MediaFileManager::closeFile()
 {
     if (!currentFilePath.isEmpty()) {
+        // Stop parsing if in progress
+        stopParsing();
+        
         closeFFmpegFile();
         currentFilePath.clear();
         fileSize = 0;
@@ -115,6 +128,11 @@ bool MediaFileManager::openFFmpegFile(const QString &filePath)
     // Extract all stream information
     extractAllStreamInfo();
 
+    // Automatically start parsing after stream extraction is complete (if enabled)
+    if (autoParsingEnabled) {
+        startParsing();
+    }
+
     return true;
 }
 
@@ -161,6 +179,9 @@ bool MediaFileManager::isAudioStream(int streamIndex) const
 
 void MediaFileManager::cleanupFFmpegResources()
 {
+    // Stop parsing first
+    stopParsing();
+    
     if (formatContext) {
         avformat_close_input(&formatContext);
         formatContext = nullptr;
@@ -175,7 +196,7 @@ void MediaFileManager::cleanupFFmpegResources()
     }
     videoStream = nullptr;
     audioStream = nullptr;
-
+    
     // Clear stream information lists
     videoStreamInfoList.clear();
     audioStreamInfoList.clear();
@@ -378,4 +399,84 @@ QString MediaFileManager::formatAspectRatio(int num, int den) const
         return QString("unknown");
     }
     return QString("%1:%2").arg(num).arg(den);
+}
+
+void MediaFileManager::startParsing()
+{
+    if (currentFilePath.isEmpty()) {
+        emit error("No file opened for parsing");
+        return;
+    }
+    
+    // Stop any existing parsing
+    stopParsing();
+    
+    // Create worker thread
+    workerThread = new QThread(this);
+    
+    // Create parser thread object
+    parserThread = new MediaParserThread();
+    parserThread->setFilePath(currentFilePath);
+    
+    // Move parser to worker thread
+    parserThread->moveToThread(workerThread);
+    
+    // Connect signals
+    connect(workerThread, &QThread::started, parserThread, &MediaParserThread::startParsing);
+    connect(parserThread, &MediaParserThread::slicesParsed, this, &MediaFileManager::slicesParsed, Qt::QueuedConnection);
+    connect(parserThread, &MediaParserThread::parsingProgress, this, &MediaFileManager::parsingProgress, Qt::QueuedConnection);
+    connect(parserThread, &MediaParserThread::parsingFinished, this, &MediaFileManager::parsingFinished, Qt::QueuedConnection);
+    connect(parserThread, &MediaParserThread::error, this, &MediaFileManager::error, Qt::QueuedConnection);
+    
+    // Connect cleanup signals
+    connect(parserThread, &MediaParserThread::parsingFinished, workerThread, &QThread::quit);
+    connect(parserThread, &MediaParserThread::error, workerThread, &QThread::quit);
+    connect(workerThread, &QThread::finished, parserThread, &QObject::deleteLater);
+    connect(workerThread, &QThread::finished, workerThread, &QObject::deleteLater);
+    
+    // Clear pointers when objects are deleted
+    connect(parserThread, &QObject::destroyed, this, [this]() { parserThread = nullptr; });
+    connect(workerThread, &QObject::destroyed, this, [this]() { workerThread = nullptr; });
+    
+    // Start the worker thread
+    workerThread->start();
+    
+    qDebug() << "Started parsing thread for file:" << currentFilePath;
+}
+
+void MediaFileManager::stopParsing()
+{
+    if (parserThread) {
+        parserThread->requestStop();
+    }
+    
+    if (workerThread && workerThread->isRunning()) {
+        qDebug() << "Stopping parsing thread...";
+        workerThread->quit();
+        if (!workerThread->wait(5000)) { // Wait up to 5 seconds
+            qDebug() << "Force terminating parsing thread...";
+            workerThread->terminate();
+            workerThread->wait();
+        }
+    }
+    
+    // Objects will be deleted automatically through deleteLater connections
+    parserThread = nullptr;
+    workerThread = nullptr;
+}
+
+bool MediaFileManager::isParsing() const
+{
+    return workerThread && workerThread->isRunning();
+}
+
+void MediaFileManager::setAutoParsingEnabled(bool enabled)
+{
+    autoParsingEnabled = enabled;
+    qDebug() << "Auto-parsing" << (enabled ? "enabled" : "disabled");
+}
+
+bool MediaFileManager::isAutoParsingEnabled() const
+{
+    return autoParsingEnabled;
 } 

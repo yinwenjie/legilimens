@@ -211,6 +211,11 @@ void MainWindow::setupDockWidgets()
         sliceManager->getDockWidget()->setMinimumWidth(sideWidth);
         sliceManager->getDockWidget()->resize(sideWidth, sliceManager->getDockWidget()->height());
     }
+    int sliceHeight = static_cast<int>(windowHeight * 0.6);
+    if (sliceManager && sliceManager->getDockWidget()) {
+        sliceManager->getDockWidget()->setMinimumHeight(sliceHeight);
+        sliceManager->getDockWidget()->resize(sliceManager->getDockWidget()->width(), sliceHeight);
+    }
 
     // Set Sequence view to 20% of window height
     int sequenceHeight = static_cast<int>(windowHeight * 0.2);

@@ -1,12 +1,23 @@
 #include "view/widgets/streamswidgetmanager.h"
 #include "model/streamtreemodel.h"
+#include "controller/controller.h"
 #include <QVBoxLayout>
 
 StreamsWidgetManager::StreamsWidgetManager(QWidget *parent)
     : BaseWidgetManager(parent)
     , treeView(nullptr)
     , streamModel(nullptr)
+    , connectedController(nullptr)
 {
+}
+
+StreamsWidgetManager::~StreamsWidgetManager()
+{
+    // Disconnect from controller if connected
+    if (connectedController) {
+        disconnect(connectedController, &Controller::streamInfoUpdated,
+                   this, &StreamsWidgetManager::onStreamInfoUpdated);
+    }
 }
 
 void StreamsWidgetManager::setupContentWidget()
@@ -52,7 +63,33 @@ void StreamsWidgetManager::updateContent()
 {
     // Update the model with new stream data
     if (streamModel) {
-        // TODO: Update the model with actual stream data
-        // For now, the example data in setupModelData() will be shown
+        // The model will be updated through the onStreamInfoUpdated slot
+        // when connected to the controller
+    }
+}
+
+void StreamsWidgetManager::connectToController(Controller *controller)
+{
+    // Disconnect from previous controller if any
+    if (connectedController) {
+        disconnect(connectedController, &Controller::streamInfoUpdated, 
+                   this, &StreamsWidgetManager::onStreamInfoUpdated);
+    }
+    
+    connectedController = controller;
+    
+    if (controller) {
+        connect(controller, &Controller::streamInfoUpdated, 
+                this, &StreamsWidgetManager::onStreamInfoUpdated, Qt::QueuedConnection);
+    }
+}
+
+void StreamsWidgetManager::onStreamInfoUpdated(const QList<VideoStreamInfo> &videoStreams, const QList<AudioStreamInfo> &audioStreams)
+{
+    if (streamModel) {
+        streamModel->updateStreamData(videoStreams, audioStreams);
+
+        // Expand all items to show the detailed information
+        treeView->expandAll();
     }
 } 

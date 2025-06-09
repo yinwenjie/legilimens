@@ -35,6 +35,11 @@ MainWindow::MainWindow(QWidget *parent)
     createMenus();
     setupDockWidgets();
     setupConnections();
+    
+    // Connect StreamsWidgetManager to controller for stream updates
+    if (streamsManager) {
+        streamsManager->connectToController(controller);
+    }
 
     // Show window maximized
     showMaximized();

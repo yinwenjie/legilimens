@@ -20,10 +20,17 @@ MediaFileManager::MediaFileManager(QObject *parent)
     , packet(nullptr)
     , frame(nullptr)
 {
+    // Register meta types for signal-slot system
+    qRegisterMetaType<VideoStreamInfo>("VideoStreamInfo");
+    qRegisterMetaType<AudioStreamInfo>("AudioStreamInfo");
+    qRegisterMetaType<QList<VideoStreamInfo>>("QList<VideoStreamInfo>");
+    qRegisterMetaType<QList<AudioStreamInfo>>("QList<AudioStreamInfo>");
 }
 
 MediaFileManager::~MediaFileManager()
 {
+    // Disconnect all signals to prevent issues during destruction
+    disconnect();
     closeFile();
 }
 
@@ -105,6 +112,9 @@ bool MediaFileManager::openFFmpegFile(const QString &filePath)
     qDebug() << "  Duration:" << formatContext->duration / AV_TIME_BASE << "seconds";
     qDebug() << "  Number of streams:" << formatContext->nb_streams;
 
+    // Extract all stream information
+    extractAllStreamInfo();
+
     return true;
 }
 
@@ -165,6 +175,10 @@ void MediaFileManager::cleanupFFmpegResources()
     }
     videoStream = nullptr;
     audioStream = nullptr;
+
+    // Clear stream information lists
+    videoStreamInfoList.clear();
+    audioStreamInfoList.clear();
 }
 
 QString MediaFileManager::getCurrentFilePath() const
@@ -175,4 +189,193 @@ QString MediaFileManager::getCurrentFilePath() const
 qint64 MediaFileManager::getFileSize() const
 {
     return fileSize;
+}
+
+void MediaFileManager::extractAllStreamInfo()
+{
+    videoStreamInfoList.clear();
+    audioStreamInfoList.clear();
+
+    for (unsigned int i = 0; i < formatContext->nb_streams; i++) {
+        if (isVideoStream(i)) {
+            VideoStreamInfo info = extractVideoStreamInfo(i);
+            videoStreamInfoList.append(info);
+        } else if (isAudioStream(i)) {
+            AudioStreamInfo info = extractAudioStreamInfo(i);
+            audioStreamInfoList.append(info);
+        }
+    }
+
+    emit streamsInfoUpdated(videoStreamInfoList, audioStreamInfoList);
+    qDebug() << "Extracted" << videoStreamInfoList.size() << "video streams and" << audioStreamInfoList.size() << "audio streams";
+}
+
+VideoStreamInfo MediaFileManager::extractVideoStreamInfo(int streamIndex) const
+{
+    VideoStreamInfo info;
+
+    if (!formatContext || streamIndex < 0 || streamIndex >= (int)formatContext->nb_streams) {
+        return info;
+    }
+
+    AVStream *stream = formatContext->streams[streamIndex];
+    AVCodecParameters *codecpar = stream->codecpar;
+
+    info.streamIndex = streamIndex;
+    info.codecType = "video";
+    info.codecId = getCodecName(codecpar->codec_id);
+    info.codecTag = codecpar->codec_tag;
+    info.format = getPixelFormatName(codecpar->format);
+    info.bitRate = codecpar->bit_rate;
+    info.profile = getProfileName(codecpar->codec_id, codecpar->profile);
+    info.level = getLevelName(codecpar->codec_id, codecpar->level);
+    info.width = codecpar->width;
+    info.height = codecpar->height;
+    info.sampleAspectRatio = formatAspectRatio(codecpar->sample_aspect_ratio.num, codecpar->sample_aspect_ratio.den);
+    info.fieldOrder = getFieldOrderName(codecpar->field_order);
+    info.colorRange = getColorRangeName(codecpar->color_range);
+    info.colorPrimaries = getColorPrimariesName(codecpar->color_primaries);
+    info.colorTrc = getColorTrcName(codecpar->color_trc);
+    info.colorSpace = getColorSpaceName(codecpar->color_space);
+    info.chromaLocation = getChromaLocationName(codecpar->chroma_location);
+    info.videoDelay = stream->codecpar->video_delay;
+
+    return info;
+}
+
+AudioStreamInfo MediaFileManager::extractAudioStreamInfo(int streamIndex) const
+{
+    AudioStreamInfo info;
+
+    if (!formatContext || streamIndex < 0 || streamIndex >= (int)formatContext->nb_streams) {
+        return info;
+    }
+
+    AVStream *stream = formatContext->streams[streamIndex];
+    AVCodecParameters *codecpar = stream->codecpar;
+
+    info.streamIndex = streamIndex;
+    info.codecType = "audio";
+    info.codecId = getCodecName(codecpar->codec_id);
+    info.codecTag = codecpar->codec_tag;
+    info.format = av_get_sample_fmt_name(static_cast<AVSampleFormat>(codecpar->format));
+    info.bitRate = codecpar->bit_rate;
+    info.profile = getProfileName(codecpar->codec_id, codecpar->profile);
+    info.sampleRate = codecpar->sample_rate;
+    info.channels = codecpar->ch_layout.nb_channels;
+
+    char layout_name[256];
+    av_channel_layout_describe(&codecpar->ch_layout, layout_name, sizeof(layout_name));
+    info.channelLayout = QString(layout_name);
+
+    info.bitsPerSample = av_get_bits_per_sample(codecpar->codec_id);
+
+    return info;
+}
+
+QList<VideoStreamInfo> MediaFileManager::getVideoStreamInfoList() const
+{
+    return videoStreamInfoList;
+}
+
+QList<AudioStreamInfo> MediaFileManager::getAudioStreamInfoList() const
+{
+    return audioStreamInfoList;
+}
+
+int MediaFileManager::getVideoStreamCount() const
+{
+    return videoStreamInfoList.size();
+}
+
+int MediaFileManager::getAudioStreamCount() const
+{
+    return audioStreamInfoList.size();
+}
+
+int MediaFileManager::getTotalStreamCount() const
+{
+    return formatContext ? formatContext->nb_streams : 0;
+}
+
+QString MediaFileManager::getCodecName(int codecId) const
+{
+    const AVCodec *codec = avcodec_find_decoder(static_cast<AVCodecID>(codecId));
+    if (codec && codec->name) {
+        return QString(codec->name);
+    }
+    return QString("unknown");
+}
+
+QString MediaFileManager::getPixelFormatName(int pixFmt) const
+{
+    const char *name = av_get_pix_fmt_name(static_cast<AVPixelFormat>(pixFmt));
+    return name ? QString(name) : QString("unknown");
+}
+
+QString MediaFileManager::getColorRangeName(int colorRange) const
+{
+    switch (colorRange) {
+        case AVCOL_RANGE_MPEG: return "tv";
+        case AVCOL_RANGE_JPEG: return "pc";
+        default: return "unknown";
+    }
+}
+
+QString MediaFileManager::getColorPrimariesName(int colorPrimaries) const
+{
+    const char *name = av_color_primaries_name(static_cast<AVColorPrimaries>(colorPrimaries));
+    return name ? QString(name) : QString("unknown");
+}
+
+QString MediaFileManager::getColorTrcName(int colorTrc) const
+{
+    const char *name = av_color_transfer_name(static_cast<AVColorTransferCharacteristic>(colorTrc));
+    return name ? QString(name) : QString("unknown");
+}
+
+QString MediaFileManager::getColorSpaceName(int colorSpace) const
+{
+    const char *name = av_color_space_name(static_cast<AVColorSpace>(colorSpace));
+    return name ? QString(name) : QString("unknown");
+}
+
+QString MediaFileManager::getChromaLocationName(int chromaLocation) const
+{
+    const char *name = av_chroma_location_name(static_cast<AVChromaLocation>(chromaLocation));
+    return name ? QString(name) : QString("unknown");
+}
+
+QString MediaFileManager::getFieldOrderName(int fieldOrder) const
+{
+    switch (fieldOrder) {
+        case AV_FIELD_PROGRESSIVE: return "progressive";
+        case AV_FIELD_TT: return "tt";
+        case AV_FIELD_BB: return "bb";
+        case AV_FIELD_TB: return "tb";
+        case AV_FIELD_BT: return "bt";
+        default: return "unknown";
+    }
+}
+
+QString MediaFileManager::getProfileName(int codecId, int profile) const
+{
+    const char *name = avcodec_profile_name(static_cast<AVCodecID>(codecId), profile);
+    return name ? QString(name) : QString("unknown");
+}
+
+QString MediaFileManager::getLevelName(int codecId, int level) const
+{
+    if (level == AV_LEVEL_UNKNOWN) {
+        return QString("unknown");
+    }
+    return QString::number(level);
+}
+
+QString MediaFileManager::formatAspectRatio(int num, int den) const
+{
+    if (den == 0) {
+        return QString("unknown");
+    }
+    return QString("%1:%2").arg(num).arg(den);
 } 

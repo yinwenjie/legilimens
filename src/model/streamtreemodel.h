@@ -4,24 +4,33 @@
 #include <QAbstractItemModel>
 #include <QString>
 #include <QVector>
+#include <QVariant>
+
+// Forward declarations
+struct VideoStreamInfo;
+struct AudioStreamInfo;
 
 class StreamTreeItem
 {
 public:
-    explicit StreamTreeItem(const QString &name, StreamTreeItem *parent = nullptr);
+    explicit StreamTreeItem(const QString &name, const QString &value = QString(), StreamTreeItem *parent = nullptr);
     ~StreamTreeItem();
 
     void appendChild(StreamTreeItem *child);
     StreamTreeItem *child(int row);
     int childCount() const;
     int columnCount() const;
-    QString data(int column) const;
+    QVariant data(int column) const;
     int row() const;
     StreamTreeItem *parentItem();
+
+    // Set data
+    void setData(const QString &name, const QVariant &value);
 
 private:
     QVector<StreamTreeItem*> m_childItems;
     QString m_name;
+    QVariant m_value;
     StreamTreeItem *m_parentItem;
 };
 
@@ -41,10 +50,18 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
-    void setupModelData();
+    // Stream data management
+    void updateStreamData(const QList<VideoStreamInfo> &videoStreams, const QList<AudioStreamInfo> &audioStreams);
+    void clearStreamData();
 
 private:
     StreamTreeItem *rootItem;
+
+    // Helper methods
+    void setupModelData();
+    StreamTreeItem* createVideoStreamItem(const VideoStreamInfo &videoInfo, StreamTreeItem *parent);
+    StreamTreeItem* createAudioStreamItem(const AudioStreamInfo &audioInfo, StreamTreeItem *parent);
+    void addPropertyItem(StreamTreeItem *parent, const QString &name, const QVariant &value);
 };
 
 #endif // STREAMTREEMODEL_H 

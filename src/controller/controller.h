@@ -24,12 +24,16 @@ public:
     void stop();
     void resume();
 
+    // Stream information access
+    MediaFileManager* getMediaFileManager() const { return model; }
+
 signals:
     void updateWindowTitle(const QString &title);
     void error(const QString &message);
+    void streamInfoUpdated(const QList<VideoStreamInfo> &videoStreams, const QList<AudioStreamInfo> &audioStreams);
 
 private:
-    MediaFileManager *mediaFileManager;
+    MediaFileManager *model;
 };
 
 #endif // CONTROLLER_H 

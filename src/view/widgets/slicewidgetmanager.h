@@ -3,9 +3,11 @@
 
 #include "common/basewidgetmanager.h"
 #include <QTreeView>
+#include <QThread>
 
 class SliceTreeModel;
 class Controller;
+class SliceProcessor;
 struct SliceInfo;
 
 /**
@@ -26,6 +28,11 @@ public:
     explicit SliceWidgetManager(QWidget *parent = nullptr);
     
     /**
+     * @brief Destroy the Slice Widget Manager
+     */
+    ~SliceWidgetManager();
+    
+    /**
      * @brief Update the widget content
      */
     void updateContent() override;
@@ -43,10 +50,21 @@ public:
 
 public slots:
     /**
-     * @brief Handle slice data updates
-     * @param slices The list of slices to display
+     * @brief Handle slice data updates from the controller
+     * @param slices The list of slices to process
      */
     void onSlicesParsed(const QList<SliceInfo> &slices);
+    
+    /**
+     * @brief Handle processed slice batches from the SliceProcessor
+     * @param slices The batch of processed slices
+     */
+    void onSlicesBatchProcessed(const QList<SliceInfo> &slices);
+    
+    /**
+     * @brief Handle completion of slice processing
+     */
+    void onSliceProcessingFinished();
 
 protected:
     /**
@@ -63,6 +81,10 @@ private:
     QTreeView *treeView;              ///< Tree view for displaying slices
     SliceTreeModel *sliceModel;       ///< Model for slice data
     Controller *connectedController;  ///< Connected controller
+    
+    // Background processing
+    QThread processorThread;          ///< Thread for slice processing
+    SliceProcessor *sliceProcessor;   ///< Slice processor for background processing
 };
 
 #endif // SLICEWIDGETMANAGER_H 

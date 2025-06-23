@@ -73,6 +73,8 @@ set(PROJECT_SOURCES
         src/model/streamtreemodel.h
         src/model/slicetreemodel.cpp
         src/model/slicetreemodel.h
+        src/model/sliceprocessor.cpp
+        src/model/sliceprocessor.h
         src/controller/controller.cpp
         src/controller/controller.h
 )

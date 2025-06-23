@@ -15,6 +15,7 @@
 #include <QUrl>
 #include <QMenuBar>
 #include <QStatusBar>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -35,11 +36,6 @@ MainWindow::MainWindow(QWidget *parent)
     createMenus();
     setupDockWidgets();
     setupConnections();
-    
-    // Connect StreamsWidgetManager to controller for stream updates
-    if (streamsManager) {
-        streamsManager->connectToController(controller);
-    }
 
     // Show window maximized
     showMaximized();
@@ -51,6 +47,15 @@ void MainWindow::setupConnections()
     connect(controller, &Controller::updateWindowTitle, this, &MainWindow::updateWindowTitle);
     connect(controller, &Controller::error, this, &MainWindow::showError);
     connect(controller, &Controller::clearAllWidgets, this, &MainWindow::clearAllWidgets);
+    
+    // Connect widget managers to controller
+    if (streamsManager) {
+        streamsManager->connectToController(controller);
+    }
+    
+    if (sliceManager) {
+        sliceManager->connectToController(controller);
+    }
 }
 
 void MainWindow::setupDockAreaPriorities()

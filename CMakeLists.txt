@@ -71,6 +71,8 @@ set(PROJECT_SOURCES
         src/model/mediaparserthread.h
         src/model/streamtreemodel.cpp
         src/model/streamtreemodel.h
+        src/model/slicetreemodel.cpp
+        src/model/slicetreemodel.h
         src/controller/controller.cpp
         src/controller/controller.h
 )
